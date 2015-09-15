@@ -1,0 +1,16 @@
+#incr {
+	transition: all 1s ease-in;
+	width: 200px;
+	margin-left: 25px;
+}
+a {
+	color: black;
+}
+a:hover, a:active, a:visited {
+	color: black;
+}
+
+.display {
+	display: block;
+	margin: 0;
+}
