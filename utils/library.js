@@ -2,6 +2,7 @@
 -------------------
 \*  HOMOMORPHS   */
 
+
 function str(s) {
     if (typeof s === 'string')
         return s;
@@ -9,27 +10,42 @@ function str(s) {
         throw new TypeError('Error: Input excepts String type');
 }
 
-function func(f) {
-    if (typeof f === 'function')
-        return f;
-    else
-        throw new TypeError('Error: Input excepts Function type');
+function classOf(s) {
+    s = str(s);
+    return function(a) {
+        if ({}.toString.call(a) === '[object ' + s + ']')
+            return a;
+        else
+            throw new TypeError('Error: Input excepts ' + s +' type');
+    }
 }
 
-function num(n) {
-    if (typeof n === 'number')
-        return n;
+function typeOf(s) {
+    s = str(s);
+    return function(v) {
+      if (typeof v === s)
+        return v;
     else
-        throw new TypeError('Error: Input excepts Number type');
+        throw new TypeError('Error: Input excepts ' + s + ' type');
+    }
+}
+function obj(o) {
+    return classOf('Object')(o);
+
 }
 
 function arr(a) {
-    if ({}.toString.call(a) === '[object Array]')
-        return a;
-    else
-        throw new TypeError('Error: Input excepts Array type');
-
+    return classOf('Array')(a);
 }
+function func(f) {
+    return typeOf('function')(f);
+}
+
+function num(n) {
+    return typeOf('number')(n);
+}
+
+//------------------------------//
 
 function api(a) {
     if (a === 'api')
@@ -43,19 +59,12 @@ function isArr(a) {
         return a;
     else
         return false;
-
 }
 
-function obj(o) {
-    if ({}.toString.call(o) === '[object Object]')
-        return o;
-    else
-        throw new TypeError('Error: Input excepts Object type');
-}
 
 /* FUNCTORS    *\
 -----------------
-\* ARRAYOF     */
+\* ARRAYS      */
 
 function arrayOf(c) {
     return function(a) {
@@ -63,8 +72,24 @@ function arrayOf(c) {
     }
 }
 
-function objArr(o) {
-    return arrayOf(obj)(o);
+function funcArr(a) {
+    return arrayOf(func)(a);
+}
+
+function numArr(a) {
+    return arrayOf(num)(a);
+}
+
+function strArr(a) {
+    return arrayOf(str)(a);
+}
+
+function objArr(a) {
+    return arrayOf(obj)(a);
+}
+
+function arrArr(a) {
+    return arrayOf(arr)(a);
 }
 
 function extend(destination, source) {
@@ -82,8 +107,14 @@ function extend(destination, source) {
     return destination;
 };
 
+function flatten(array) {
+    return arr(array).reduce(function(a, b) {
+        return a.concat(b);
+    });
 
-function mergeObj(toExtend) {
+}
+
+function mergeObj(toExtend) { // A.K.A. Extend Many
     return objArr(toExtend)
         .map(function(e) {
             return extend({}, e)
@@ -93,10 +124,25 @@ function mergeObj(toExtend) {
         });
 }
 
+/* FUNCTORS    *\
+-----------------
+\* FUNCTIONS   */
+
+function fcompose() {
+    var funcs = arrayOf(func)([].slice.call(arguments));
+    return function() {
+        var fargs = arguments;
+        for (var i = funcs.length - 1; i >= 0; i -= 1) {
+            fargs = [funcs[i].apply(this, fargs)];
+            console.log(fargs);
+        }
+        return fargs[0];
+    }
+}
+
 /*  MONADS      *\
 ------------------
 \*  MAYBES      */
-
 
 function Maybe() {}
 
@@ -171,6 +217,20 @@ function lens(set, get) {
     return f;
 }
 
+/* PARTIAL APPLICATION *\
+-------------------------
+\*  DEFINITE ARITY     */   
+
+function bind(fn, context) {
+    return function() {
+        return fn.apply(context, arguments);
+    }
+}
+
+/* CURRYING           *\
+------------------------
+\*  INDEFINITE ARITY  */  
+
 function curry(fn) {
     var arity = fn.length;
 
@@ -188,14 +248,9 @@ function curry(fn) {
     }
 }
 
-
-
-
-function bind(fn, context) {
-    return function() {
-        return fn.apply(context, arguments);
-    }
-}
+/* I/O                    *\
+----------------------------
+\*  TWO WAY DATA BINDING  */  
 
 
 function observe(value) {
@@ -227,18 +282,6 @@ function extendData(target, data) {
     return extend(target, data);
 }
 
-function fcompose() {
-    var funcs = arrayOf(func)([].slice.call(arguments));
-    return function() {
-        var fargs = arguments;
-        for (var i = funcs.length - 1; i >= 0; i -= 1) {
-            fargs = [funcs[i].apply(this, fargs)];
-            console.log(fargs);
-        }
-        return fargs[0];
-    }
-}
-
 function filter(event) {
     if (this.hasOwnProperty(event))
         return this[event]();
@@ -246,14 +289,7 @@ function filter(event) {
         throw new Error(this.prototype.constructor.name + ': Property Not Found');
 }
 
-function flatten(array) {
-    return arr(array).reduce(function(a, b) {
-        return a.concat(b);
-    });
-
-}
-
-function debounce(func, wait, immediate) {
+function debounce(func, wait, immediate) { 
     var timeout;
     return function() {
         var context = this,
@@ -268,7 +304,6 @@ function debounce(func, wait, immediate) {
         if (callNow) func.apply(context, args);
     };
 };
-
 
 
 function Events(target) {
