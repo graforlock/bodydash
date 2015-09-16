@@ -13,14 +13,22 @@ var routes = {
             console.log('register route');
 
         }
-
+    },
+    api: {
+        root: function() {
+            console.log('docs api');
+        }
+    },
+    learning: {
+        root: function() {
+            console.log('learning route');
+        }
     },
     contact: {
         root: function() {
-            console.log('contact');
+            console.log('Sum');
         }
     }
-
 };
 
 

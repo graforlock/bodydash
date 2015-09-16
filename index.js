@@ -1,7 +1,8 @@
 var url = 'http://teamtreehouse.com/maciejsitko.json',
 	ajaxGet = ajaxGetAsync(url);
 
-var incr = document.getElementById('incr');
+var incr = document.getElementById('incr'),
+	button = document.getElementById('action');
 
 var Data = {}; 
 
@@ -17,9 +18,9 @@ EventSource.fetched = function() {
 		})
 		.take(5)
 		.each(function(e) {
-			var div = document.createElement('div');
+			var div = document.createElement('p');
 			div.className = "display";
-			div.innerHTML = "<b>" + e.key + ":</b> " + e.name + "<hr>";
+			div.innerHTML = "<b>" + e.key + ":</b> " + e.name;
 			incr.appendChild(div);
 		});
 
@@ -27,16 +28,19 @@ EventSource.fetched = function() {
 
 EventSource.post = function() {
 	
-	incr.innerHTML= 'Fetching data....';
+	incr.innerHTML= '<div id="spinner"><div class="block-1"></div><div class="block-2"></div><div class="block-3"></div><div class="block-4"></div><div class="block-5"></div><div class="block-6"></div><div class="block-7"></div><div class="block-8"></div></div>';
 	ajaxGet(this.target);
 
 };
 
+EventSource.load = function() {
+	this.post();
+}
+
 var	onEvent = bind(filter,EventSource); 
 
 
-var button = document.getElementById('action');
-
+window.onload = trigger('load');
 button.addEventListener('click', function(){
 	trigger('post');
 }, false);

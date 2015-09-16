@@ -171,19 +171,25 @@ function lens(set, get) {
     return f;
 }
 
-function curry(a) {
-    return function(b) {
-        return a(b);
-    }
-}
+function curry(fn) {
+    var arity = fn.length;
 
-function curryThree(a) {
-    return function(b) {
-        return function(c) {
-            return a(b, c);
+    return getArgs([]);
+
+    function getArgs(totalArgs) {
+        return function stepTwo() {
+            var nextTotalArgs = totalArgs.concat([].slice.call(arguments, 0));
+            if (nextTotalArgs.length >= arity)
+                return fn.apply(this, nextTotalArgs);
+            else
+               return getArgs(nextTotalArgs);
+
         }
     }
 }
+
+
+
 
 function bind(fn, context) {
     return function() {
@@ -283,8 +289,15 @@ function Events(target) {
 }
 
 function User() {
-
+    this.username = none();
 }
+User.prototype.setUsername = function(name) {
+    this.username = just(str(name));
+};
+User.prototype.getUsernameMaybe = function() {
+    var usernameMaybe = curry(maybeOf(str));
+    return usernameMaybe(this.username).orElse('anonymous');
+};
 
 function Router(routes) {
     this.routes = mergeObj(routes);
@@ -297,8 +310,8 @@ function Router(routes) {
         }
         if (this.routes[r]) {
             return this.routes[r].root();
-        } else if (r === "") {
-            return this.routes.root();
+        } else if (r === "" || !this.routes[r]) {
+            return this.routes.root(); // 404 route?
         }
     };
     this.controller = function() {
