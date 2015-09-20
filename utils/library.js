@@ -61,6 +61,16 @@ function isArr(a) {
         return false;
 }
 
+function inProto(o,name) {
+    return name in object && !o.hasOwnProperty(name);
+}
+function hasOwn(o, name) {
+    return !inProto(o,name);
+}
+
+function protoOf(o) {
+    return Object.getPrototypeOf(o);
+}
 
 /* FUNCTORS    *\
 -----------------
@@ -283,10 +293,11 @@ function extendData(target, data) {
 }
 
 function filter(event) {
+    event = event.toLowerCase();
     if (this.hasOwnProperty(event))
         return this[event]();
     else
-        throw new Error(this.prototype.constructor.name + ': Property Not Found');
+        throw new Error(this.constructor.name + ': Property "' + event +'" Not Found on the Object');
 }
 
 function debounce(func, wait, immediate) { 
@@ -326,6 +337,7 @@ function Events(target) {
 function User() {
     this.username = none();
 }
+
 User.prototype.setUsername = function(name) {
     this.username = just(str(name));
 };
@@ -377,3 +389,56 @@ function Router(routes) {
 
     };
 }
+
+
+// b_d.route('home')
+//     .view(home)
+//     .events('fetched')
+//     .get(url)
+//     .to(divDest);
+
+// b_d.route('home/post')
+//     .view(post)
+//     .events('post')
+//     .post(url)
+//     .and()
+//     .goto('home');
+
+/* HELPERS/UTILITIES *\
+-----------------------
+\*                   */
+
+function newObj() {
+    return extend({},{});
+}
+
+function ajax() {
+    return new XMLHttpRequest();
+}
+
+function immutable(o) {
+    o = obj(o);
+    return Object.freeze(o);
+}
+
+
+// var bd = {
+//     route: Router,
+//     event: Events
+// }
+
+// function memoize(f) {
+//     var cache = {};
+
+//     return function() {
+//         var arg_str = JSON.stringify(arguments);
+//         cache[arg_str] = cache[arg_str] || f.apply(f, arguments);
+//         return cache[arg_str];
+//     }
+// }
+
+// NEXT:
+// MapWith, getWith
+// Working variadic
+// Improve memoize
+// Map function that takes an array of methods as strings, and executes them on objects' keys Object.keys()

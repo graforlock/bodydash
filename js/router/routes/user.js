@@ -2,7 +2,7 @@
 var user = {
     user: {
         root: function() {
-            console.log('user route');
+            console.log('log on screen');
         },
         panel: function() {
             console.log('user panel');

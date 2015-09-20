@@ -33,21 +33,23 @@ var trigger = function(event) {
 }
 
 var ajaxGetAsync = function(url) {
-    return function(target) {
-        var xhr = new XMLHttpRequest();
+    url = str(url);
+    return function(target, method) {
+        method = str(method);
+        var xhr = ajax();
         xhr.onreadystatechange = function() {
             if (xhr.status == 200 && xhr.readyState == 4) {
                 var json = JSON.parse(xhr.responseText);
                 return lens(extendData, function() {
-                        throw new Error('Getter Not Permitted')
+                        throw new Error('Getter Not Permitted');
                     })
                     .set(target, obj(json)),
-                    trigger('fetched');
+                    trigger(method);
             }
             if (xhr.status == 404) throw new Error('Sever responded with 404: Not Found');
             if (xhr.status == 500) throw new Error('Sever responded with 500: Internal Error');
         }
-        xhr.open("GET", url);
+        xhr.open(method, url);
         xhr.send(null);
     }
 }
