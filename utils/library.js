@@ -348,8 +348,12 @@ User.prototype.getUsernameMaybe = function() {
 
 
 
-function b_d() {
+function b_d(data) {
 
+
+        if(data && typeof data === 'function') {
+            return new Stream(data);
+        }
 
         function Stream(step) {
             var next = step;
@@ -376,8 +380,14 @@ function b_d() {
                     if (this.routes[r]) {
                         return this.routes[r].root;
                     } else if (r === "" || !this.routes[r]) {
-                        return {
+                            return {
                                 next: new Stream(this.routes.root)
+                            };
+
+                       // return {
+                       //       get: get(this.routes.root)
+
+                       // };
                     }
                 };
                 this.controller = function() {
@@ -418,12 +428,12 @@ function b_d() {
 
 }
 
-Function.prototype.sequence = function(prev) {
-    var next = this;
-    return function() {
-        return prev.call(this, next.apply(this,arguments));
-    }
-}
+// Function.prototype.sequence = function(prev) {
+//     var next = this;
+//     return function() {
+//         return prev.call(this, next.apply(this,arguments));
+//     }
+// }
 
 /* b_d.route('home')
        .view(home)
