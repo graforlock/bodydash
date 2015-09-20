@@ -101,10 +101,12 @@ function objArr(a) {
 function arrArr(a) {
     return arrayOf(arr)(a);
 }
+function extendObj(destination, source) {
+    return extend(obj(destination), obj(source));
+}
 
 function extend(destination, source) {
-    destination = obj(destination);
-    source = obj(source);
+
     for (var property in source) {
         if (source[property] && source[property].constructor &&
             source[property].constructor === Object) {
@@ -127,10 +129,10 @@ function flatten(array) {
 function mergeObj(toExtend) { // A.K.A. Extend Many
     return objArr(toExtend)
         .map(function(e) {
-            return extend({}, e)
+            return extendObj({}, e)
         })
         .reduce(function(a, b) {
-            return extend(a, b)
+            return extendObj(a, b)
         });
 }
 
@@ -289,7 +291,7 @@ function observe(value) {
 
 
 function extendData(target, data) {
-    return extend(target, data);
+    return extendObj(target, data);
 }
 
 function filter(event) {
@@ -379,10 +381,11 @@ function b_d(data) {
                     if (this.routes[r]) {
                         return this.routes[r].root;
                     } else if (r === "" || !this.routes[r]) {
-                            return {
-                                next: new Stream(this.routes.root),
+                            return extend(this, {
+                                next: new Stream(this.routes.root) // or new b_d() ?
+                            } );
                                 // super: this // How can i mix in this thing again from the inside?
-                            };
+                            
 
                        // return {
                        //       get: get(this.routes.root)
@@ -435,6 +438,7 @@ function b_d(data) {
 //     }
 // }
 
+// BLUEPRINTS
 /* b_d.route('home')
        .view(home)
        .events('fetched')
@@ -455,7 +459,7 @@ function b_d(data) {
 \*                   */
 
 function newObj() {
-    return extend({},{});
+    return extendObj({},{});
 }
 
 function ajax() {
