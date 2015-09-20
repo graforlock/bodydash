@@ -364,7 +364,6 @@ function b_d(data) {
                     return prev.call(this, next.apply(this,arguments));
                 }
         }
-
         function Router(routes) {
 
             if(this instanceof Router) {
@@ -381,7 +380,8 @@ function b_d(data) {
                         return this.routes[r].root;
                     } else if (r === "" || !this.routes[r]) {
                             return {
-                                next: new Stream(this.routes.root)
+                                next: new Stream(this.routes.root),
+                                // super: this // How can i mix in this thing again from the inside?
                             };
 
                        // return {
