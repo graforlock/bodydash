@@ -1,7 +1,6 @@
 
 var routes = [api,contact,home,learning,user];
 
-var b_d = b_d();
 
 var and = b_d.router(routes);
 
