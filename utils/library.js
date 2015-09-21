@@ -370,7 +370,17 @@ function b_d(data) {
 
             if(this instanceof Router) {
 
-                this.routes = mergeObj(routes);
+                this.routes = null;
+                this.view = function(view) {
+                    return { 
+                        route: this.routes,
+                        handle: view
+                    }
+                };
+                this.validate = function(routes) {
+                    return typeof routes === 'string' ? this.routes = routes : this.routes = mergeObj(routes);
+                }
+                this.validate(routes);
                 this.route = function() {
                     var r = this.controller();
                     r = isArr(r) || str(r);
