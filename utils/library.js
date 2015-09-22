@@ -161,12 +161,15 @@ function pipe() { // Encloses functions
             fargs = [funcs[i].apply(this, fargs)];
             console.log(fargs[0]);
         }
-         if(fargs[0]) { var flipped = flip(pipe)(fargs[0]) } else { var flipped = flip(pipe) };
+         if(fargs[0]) { var flipped = flip(pipe)(fargs[0]) } else { var flipped = pipe; };
         return {
-            pipe: flipped
+            pipe: flipped,
+            exec: function(func) {
+                return func(fargs[0]);
+            }
 
         }
-    // }
+    // } // NEEDS to be bound by .bind at some point ?
 }
 
 
