@@ -1,3 +1,5 @@
+// TODO: Event emitter integrated with the bd library
+
 var eventEmitter = {
     triggerEvent: function(data) {
         eventEmitter.eventHandler(data);

@@ -44,7 +44,9 @@ function func(f) {
 function num(n) {
     return typeOf('number')(n);
 }
-
+function id(x) {
+    return x;
+}
 //------------------------------//
 
 function api(a) {
@@ -146,11 +148,28 @@ function fcompose() {
         var fargs = arguments;
         for (var i = funcs.length - 1; i >= 0; i -= 1) {
             fargs = [funcs[i].apply(this, fargs)];
-            console.log(fargs);
         }
         return fargs[0];
     }
 }
+
+function pipe() { // Encloses functions
+    var funcs = arrayOf(func)([].slice.call(arguments,0,1));
+    // return function() { // Provides arguments
+        var fargs = [].slice.call(arguments,1);
+        for (var i = funcs.length - 1; i >= 0; i -= 1) {
+            fargs = [funcs[i].apply(this, fargs)];
+            console.log(fargs[0]);
+        }
+         if(fargs[0]) { var flipped = flip(pipe)(fargs[0]) } else { var flipped = flip(pipe) };
+        return {
+            pipe: flipped
+
+        }
+    // }
+}
+
+
 
 /*  MONADS      *\
 ------------------
@@ -260,6 +279,14 @@ function curry(fn) {
     }
 }
 
+function flip ( fn ) { 
+    return function ( first ) { 
+        return function ( second ) { 
+            return fn.call( this , second , first); 
+            }; 
+        }; 
+};
+
 /* I/O                    *\
 ----------------------------
 \*  TWO WAY DATA BINDING  */  
@@ -357,29 +384,36 @@ function b_d(data) {
             return new Stream(data);
         }
 
-        function Stream(step) {
-            var next = step;
-                return function(prev) {
-                    if(!prev) {
-                        return next.apply(this, arguments);
-                    }
-                    return prev.call(this, next.apply(this,arguments));
-                }
+        // function Stream(prev) {
+        //     this.next = this;
+        //      function nextStep() {
+        //             if(!prev) {
+        //                 return next.apply(this, arguments);
+        //             }
+        //             return prev.call(this, next.apply(this,arguments));
+        //     }
+        //     return {
+        //         pipe: nextStep
+        //     }
+        // }
+        function Stream() {
+
         }
         function Router(routes) {
 
             if(this instanceof Router) {
 
                 this.routes = null;
-                this.view = function(view) {
-                    return { 
-                        route: this.routes,
-                        handle: view
-                    }
+                this.view = function(routeView) {
+                    var viewName = this.routes;
+                    this.routes = {};
+                    this.routes[viewName] = routeView;
+                    return extend(this, this.routes);
+
                 };
                 this.validate = function(routes) {
                     return typeof routes === 'string' ? this.routes = routes : this.routes = mergeObj(routes);
-                }
+                };
                 this.validate(routes);
                 this.route = function() {
                     var r = this.controller();
@@ -391,16 +425,7 @@ function b_d(data) {
                     if (this.routes[r]) {
                         return this.routes[r].root;
                     } else if (r === "" || !this.routes[r]) {
-                            return extend(this, {
-                                next: new Stream(this.routes.root) // or new b_d() ?
-                            } );
-                                // super: this // How can i mix in this thing again from the inside?
-                            
-
-                       // return {
-                       //       get: get(this.routes.root)
-
-                       // };
+                            return this.routes.root() /*||*/ ;
                     }
                 };
                 this.controller = function() {
@@ -441,7 +466,7 @@ function b_d(data) {
 
 }
 
-// Function.prototype.sequence = function(prev) {
+// Function.prototype.pipe = function(prev) {
 //     var next = this;
 //     return function() {
 //         return prev.call(this, next.apply(this,arguments));
@@ -450,7 +475,7 @@ function b_d(data) {
 
 // BLUEPRINTS
 /* b_d.route('home')
-       .view(home)
+       .view(home) <---- I AM HIERRR
        .events('fetched')
        .get(url)
        .to(divDest);
@@ -487,15 +512,18 @@ function immutable(o) {
 //     event: Events
 // }
 
-// function memoize(f) {
-//     var cache = {};
+function memoize(fn,keymaker) {
+    var lookup = {}, key;
 
-//     return function() {
-//         var arg_str = JSON.stringify(arguments);
-//         cache[arg_str] = cache[arg_str] || f.apply(f, arguments);
-//         return cache[arg_str];
-//     }
-// }
+    keymaker || (keymaker = function(args) {
+        return JSON.stringify(args);
+    });
+    return function() {
+        var key =  keymaker.call(this,arguments);
+
+        return lookup[key] || (lookup[key] = fn.apply(this, arguments));
+    }
+}
 
 // NEXT:
 // MapWith, getWith
