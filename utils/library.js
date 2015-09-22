@@ -154,14 +154,21 @@ function fcompose() {
 }
 
 function pipe() { // Encloses functions
-    var funcs = arrayOf(func)([].slice.call(arguments,0,1));
+    var funcs, fargs, fcount = 0;
+
+        console.log(funcs);
+        [].slice.call(arguments).map(function(e) {
+            if(typeof e === 'function')
+                fcount += 1;
+        })
+        funcs = [].slice.call(arguments,0,fcount);
+        fargs = [].slice.call(arguments,fcount);
     // return function() { // Provides arguments
-        var fargs = [].slice.call(arguments,1);
         for (var i = funcs.length - 1; i >= 0; i -= 1) {
             fargs = [funcs[i].apply(this, fargs)];
-            console.log(fargs[0]);
+            // console.log(fargs[0]);
         }
-         if(fargs[0]) { var flipped = flip(pipe)(fargs[0]) } else { var flipped = pipe; };
+         if(fargs[0]) { var flipped = flip(pipe)(fargs[0]) } else { throw new Error('Error: No argument provided upfront.');  };
         return {
             pipe: flipped,
             exec: function(func) {
@@ -387,18 +394,6 @@ function b_d(data) {
             return new Stream(data);
         }
 
-        // function Stream(prev) {
-        //     this.next = this;
-        //      function nextStep() {
-        //             if(!prev) {
-        //                 return next.apply(this, arguments);
-        //             }
-        //             return prev.call(this, next.apply(this,arguments));
-        //     }
-        //     return {
-        //         pipe: nextStep
-        //     }
-        // }
         function Stream() {
 
         }
