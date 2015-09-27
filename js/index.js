@@ -7,21 +7,20 @@ var incr = document.getElementById('incr'),
 var EventSource = new Events(newObj()); // Thin-air Object creation; NO State reliance
 EventSource.get = function() {
 	incr.innerHTML = "";
-	var data = Lazy(this.target.badges)
-		.map(function(e) {
-			return {
-				name: e.name,
+	var data = pipe(this.target.badges)
+		.pipe(map(function(e) { 
+			return { 
+				name : e.name, 
 				key: 'Name'
-			}
-		})
-		.take(5)
-		.each(function(e) {
+			};
+		}))
+		.pipe(take(5))
+		.exec(map(function(e) {
 			var div = document.createElement('p');
 			div.className = "display";
 			div.innerHTML = "<b>" + e.key + ":</b> " + e.name;
 			incr.appendChild(div);
-		});	
-
+		}));
 }
 
 EventSource.post = function() {
@@ -35,8 +34,8 @@ EventSource.load = function() {
 	this.post();
 }
 
-var	onEvent = bind(filter,EventSource); 
 
+var	onEvent = eventMap(EventSource);
 
 window.onload = trigger('load');
 button.addEventListener('click', function(){
@@ -44,6 +43,7 @@ button.addEventListener('click', function(){
 }, false);
 
 
-
+// Useful Externals for Node.js ->> moment, accounting, 
+// Other ->> requirejs
 
 

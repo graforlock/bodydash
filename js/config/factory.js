@@ -12,22 +12,12 @@ var eventEmitter = {
     }
 }
 
-var eventList = observe([]); // Observe the Array of Elements and Apply Data Binding
+eventEmitter.setHandler(function(data) { eventList(data);})
+
+var eventList = observe([]); // Convert to object  
 eventList.subscribe(function() {
     onEvent(this.value);
 }) // Subscribes a function invoked on Custom Event 
-
-var factory = Lazy.createWrapper(function(eventSource) {
-    var sequence = this;
-
-    eventSource.setHandler(function(data) {
-        sequence.emit(data);
-    });
-});
-
-factory(eventEmitter).each(function(e) {
-    eventList(e);
-});
 
 var trigger = function(event) {
     event = str(event);
