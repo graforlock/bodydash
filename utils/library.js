@@ -422,12 +422,11 @@ User.prototype.getUsernameMaybe = function(f) {
     return this.username.map(f);
 };
 
-
 function Router(routes) {
 
     if(this instanceof Router) {
 
-        this.routes = null;
+        this.routes = mergeObj(routes);
         this.route = function() {
             var r = this.controller();
             r = isArr(r) || str(r);
@@ -438,7 +437,7 @@ function Router(routes) {
             if (this.routes[r]) {
                 return this.routes[r].root;
             } else if (r === "" || !this.routes[r]) {
-                    return this.routes.root() /*||*/ ;
+                    return this.routes.root();
             }
         };
         this.controller = function() {
@@ -473,12 +472,6 @@ function Router(routes) {
   }
 }
 
-
-
-
-/* HELPERS/UTILITIES *\
------------------------
-\*                   */
 
 function newObj() {
     return extendObj({},{});
@@ -542,21 +535,12 @@ function variadic(fn) {
 function toLower(a) {
     return a.toLowerCase();
 }
-
 var toLower = curry(toLower);
 
 function immutable(o) {
     o = obj(o);
     return Object.freeze(o);
 }
-
-
-
-
-// var bd = {
-//     route: Router,
-//     event: Events
-// }
 
 function memoize(fn,keymaker) {
     var lookup = {}, key;
@@ -572,7 +556,6 @@ function memoize(fn,keymaker) {
 }
 
 // NEXT:
-// MapWith, getWith
-// Working variadic
+// MapWith, getWith <<-- Bound
 // Improve memoize
 // Map function that takes an array of methods as strings, and executes them on objects' keys Object.keys()

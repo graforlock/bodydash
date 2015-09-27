@@ -7,8 +7,10 @@ var routes = [api,contact,home,learning,user];
 
 
 // // var router = b_d(routes).route();
+var router = Router(routes),
+	routeChange = bind(router.route, router);
 // var routeChange = bind(b_d().router(routes).route, b_d().router(routes));
 
-// router.route();
+router.route();
 
-// window.addEventListener('hashchange', routeChange, false);
+window.addEventListener('hashchange', routeChange, false);
