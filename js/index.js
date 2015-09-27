@@ -1,5 +1,5 @@
 var url = 'http://teamtreehouse.com/maciejsitko.json',
-	ajaxGet = ajaxGetAsync(url);
+	ajaxGet = curry(ajaxAsync)(url);
 
 var incr = document.getElementById('incr'),
 	button = document.getElementById('action');
