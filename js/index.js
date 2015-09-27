@@ -1,5 +1,5 @@
 var url = 'http://teamtreehouse.com/maciejsitko.json',
-	ajaxGet = curry(ajaxAsync)(url);
+	ajaxGet = curry(ajaxGET)(url);
 
 var incr = document.getElementById('incr'),
 	button = document.getElementById('action');
@@ -26,7 +26,7 @@ EventSource.get = function() {
 EventSource.post = function() {
 	
 	incr.innerHTML= '<div id="spinner"><div class="block-1"></div><div class="block-2"></div><div class="block-3"></div><div class="block-4"></div><div class="block-5"></div><div class="block-6"></div><div class="block-7"></div><div class="block-8"></div></div>';
-	ajaxGet(this.target, 'GET');
+	ajaxGet(this.target);
 
 };
 

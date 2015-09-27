@@ -1,7 +1,6 @@
 
 function Container(x) {
     this.__value = x;
-
 }
 
 Container.of = function(x) {
