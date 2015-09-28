@@ -1,6 +1,3 @@
-var url = 'http://teamtreehouse.com/maciejsitko.json',
-	ajaxGet = curry(ajaxGET)(url);
-
 var incr = document.getElementById('incr'),
 	button = document.getElementById('action');
 
@@ -22,24 +19,29 @@ EventSource.get = function() {
 			incr.appendChild(div);
 		}));
 }
+EventSource.url= 'http://teamtreehouse.com/maciejsitko.json';
 
-EventSource.post = function() {
+EventSource.load = function() {
 	
 	incr.innerHTML= '<div id="spinner"><div class="block-1"></div><div class="block-2"></div><div class="block-3"></div><div class="block-4"></div><div class="block-5"></div><div class="block-6"></div><div class="block-7"></div><div class="block-8"></div></div>';
-	ajaxGet(this.target);
+		
+	var extendTarget = curry(function(target,data) {
+		return extendData(target, data);
+	});
+	var triggerGet = trigger.bind(null,'GET');
+	var callback = compose(triggerGet,extendTarget(this.target),JSONparse);
+	console.log('stuff');
+	return ajaxGET(this.url,callback);
 
 };
 
-EventSource.load = function() {
-	this.post();
-}
 
 
 var	onEvent = eventMap(EventSource);
 
 window.onload = trigger('load');
 button.addEventListener('click', function(){
-	trigger('post');
+	trigger('load');
 }, false);
 
 

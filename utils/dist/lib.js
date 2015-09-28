@@ -5,21 +5,21 @@ function ajax() {
 }
 
 
-//Refactor to GET -->> ajaxGET(url,target)
+//Refactor the GET to take composed callback-->> ajaxGET(url,target)
 
-function ajaxGET(url,target) {
-		target = target || {};
+function ajaxGET(url, cb) {
+		// target = target || {};
 	    url = str(url);
         var xhr = ajax();
         xhr.onreadystatechange = function() {
             if (xhr.status == 200 && xhr.readyState == 4) {
-            	// return cb(xhr.responseText);
-                var json = JSON.parse(xhr.responseText);
-                return lens(extendData, function() {
-                        throw new Error('Getter Not Permitted');
-                    })
-                    .set(target, obj(json)),
-                    trigger('GET');
+            	return cb(xhr.responseText);
+                // var json = JSON.parse(xhr.responseText);
+                // return lens(extendData, function() {
+                //         throw new Error('Getter Not Permitted');
+                //     })
+                //     .set(target, obj(json)),
+                //     trigger('GET');
             }
             if (xhr.status == 404) throw new Error('Sever responded with 404: Not Found');
             if (xhr.status == 500) throw new Error('Sever responded with 500: Internal Error');
@@ -28,9 +28,7 @@ function ajaxGET(url,target) {
         xhr.send(null);
 }
 
-
-
-// Add POST here: -->> ajaxPOST(url,params)
+// Refactor POST like get -->> ajaxPOST(url,params)
 
 function ajaxPOST(url, cb) {
 		target = target || {};
@@ -53,7 +51,9 @@ function ajaxPOST(url, cb) {
         xhr.send(params);
 }
 
-
+function JSONparse(res) {
+    return JSON.parse(res);
+}
 
 // Create ajaxJSONP out of it: -->>
 
