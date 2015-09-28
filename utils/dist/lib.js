@@ -5,21 +5,18 @@ function ajax() {
 }
 
 
+function JSONparse(res) {
+    return JSON.parse(res);
+}
+
 //Refactor the GET to take composed callback-->> ajaxGET(url,target)
 
 function ajaxGET(url, cb) {
-		// target = target || {};
-	    url = str(url);
+        url = str(url);
         var xhr = ajax();
         xhr.onreadystatechange = function() {
             if (xhr.status == 200 && xhr.readyState == 4) {
-            	return cb(xhr.responseText);
-                // var json = JSON.parse(xhr.responseText);
-                // return lens(extendData, function() {
-                //         throw new Error('Getter Not Permitted');
-                //     })
-                //     .set(target, obj(json)),
-                //     trigger('GET');
+                return cb(xhr.responseText);
             }
             if (xhr.status == 404) throw new Error('Sever responded with 404: Not Found');
             if (xhr.status == 500) throw new Error('Sever responded with 500: Internal Error');
@@ -28,82 +25,17 @@ function ajaxGET(url, cb) {
         xhr.send(null);
 }
 
-// Refactor POST like get -->> ajaxPOST(url,params)
+// Refactor POST like get -->> ajaxPOST(url,cb)
 
-function ajaxPOST(url, cb) {
-		target = target || {};
-	    url = str(url);
-        var xhr = ajax();
-        xhr.onreadystatechange = function() {
-            if (xhr.status == 200 && xhr.readyState == 4) {
-            	return cb(xhr.responseText);
-                // var json = JSON.parse(xhr.responseText);
-                // return lens(extendData, function() {
-                //         throw new Error('Getter Not Permitted');
-                //     })
-                //     .set(target, obj(json)),
-                //     trigger('POST');
-            }
-            if (xhr.status == 404) throw new Error('Sever responded with 404: Not Found');
-            if (xhr.status == 500) throw new Error('Sever responded with 500: Internal Error');
-        }
-        xhr.open('POST', url);
-        xhr.send(params);
-}
+// code here...
 
-function JSONparse(res) {
-    return JSON.parse(res);
-}
+// -->>
 
 // Create ajaxJSONP out of it: -->>
 
-function success(data) {
-  // code
-}
 // var scr = document.createElement('script')
 // scr.src = '//openexchangerates.org/latest.json?callback=formatCurrency'
 // document.body.appendChild(scr)
-function compose() {
-    var funcs = arrayOf(func)([].slice.call(arguments));
-    return function() {
-        var fargs = arguments;
-        for (var i = funcs.length - 1; i >= 0; i -= 1) {
-            fargs = [funcs[i].apply(this, fargs)];
-        }
-        return fargs[0];
-    }
-}
-
-function debug(tag) {
-    tag = tag || "Debugger: "
-    return function(x) {
-        console.log(tag, x);
-        return x;
-    }
-}
-
-function pipe() { 
-    var funcs, fargs, fcount = 0;
-
-        console.log(funcs);
-        [].slice.call(arguments).map(function(e) {
-            if(typeof e === 'function')
-                fcount += 1;
-        })
-        funcs = [].slice.call(arguments,0,fcount);
-        fargs = [].slice.call(arguments,fcount);
-        for (var i = 0; i < funcs.length;i++) {
-            fargs = [funcs[i].apply(this, fargs)];
-        }
-        if(fargs[0]) { var flipped = flip(pipe)(fargs[0]) };
-        return {
-            pipe: flipped,
-            exec: function(func) {
-                return func(fargs[0]);
-            }
-
-        }
-}
 
 function Container(x) {
     this.__value = x;
@@ -494,6 +426,24 @@ function bind(fn, context) {
         return fn.apply(context, arguments);
     }
 }
+function compose() {
+    var funcs = arrayOf(func)([].slice.call(arguments));
+    return function() {
+        var fargs = arguments;
+        for (var i = funcs.length - 1; i >= 0; i -= 1) {
+            fargs = [funcs[i].apply(this, fargs)];
+        }
+        return fargs[0];
+    }
+}
+
+function debug(tag) {
+    tag = tag || "Debugger: "
+    return function(x) {
+        console.log(tag, x);
+        return x;
+    }
+}
 
 function curry(fn) {
     var arity = fn.length;
@@ -536,6 +486,31 @@ function flipMany(fn) {
         };
     };
 };
+
+
+function pipe() { 
+    var funcs, fargs, fcount = 0;
+
+        console.log(funcs);
+        [].slice.call(arguments).map(function(e) {
+            if(typeof e === 'function')
+                fcount += 1;
+        })
+        funcs = [].slice.call(arguments,0,fcount);
+        fargs = [].slice.call(arguments,fcount);
+        for (var i = 0; i < funcs.length;i++) {
+            fargs = [funcs[i].apply(this, fargs)];
+        }
+        if(fargs[0]) { var flipped = flip(pipe)(fargs[0]) };
+        return {
+            pipe: flipped,
+            exec: function(func) {
+                return func(fargs[0]);
+            }
+
+        }
+}
+
 
 function variadic(fn) {
     if (fn.length < 1) return fn;

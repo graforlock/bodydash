@@ -9,4 +9,4 @@ eventList.subscribe(function() {
 }) // Subscribes a function invoked on Custom Event 
 
 
-trigger = curry(triggerEvents)(ajaxEvents);
+triggerAjax = curry(triggerEvents)(ajaxEvents);
