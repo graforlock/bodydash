@@ -16,14 +16,6 @@ function compose() {
     }
 }
 
-function debug(tag) {
-    tag = tag || "Debugger: "
-    return function(x) {
-        console.log(tag, x);
-        return x;
-    }
-}
-
 function curry(fn) {
     var arity = fn.length;
 
@@ -66,30 +58,15 @@ function flipMany(fn) {
     };
 };
 
-
-function pipe() { 
-    var funcs, fargs, fcount = 0;
-
-        console.log(funcs);
-        [].slice.call(arguments).map(function(e) {
-            if(typeof e === 'function')
-                fcount += 1;
-        })
-        funcs = [].slice.call(arguments,0,fcount);
-        fargs = [].slice.call(arguments,fcount);
-        for (var i = 0; i < funcs.length;i++) {
-            fargs = [funcs[i].apply(this, fargs)];
-        }
-        if(fargs[0]) { var flipped = flip(pipe)(fargs[0]) };
-        return {
-            pipe: flipped,
-            exec: function(func) {
-                return func(fargs[0]);
-            }
-
-        }
+function join(monad) {
+    return monad.join();
 }
 
+function chain(f,m) {
+    return compose(join, map(f))(m);
+}
+
+var chain = curry(chain);
 
 function variadic(fn) {
     if (fn.length < 1) return fn;

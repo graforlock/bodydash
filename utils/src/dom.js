@@ -4,6 +4,12 @@ function select(selector) {
 	});
 } 
 
+function style(selector, property, value) {
+	return new IO(function() {
+		return join(select(selector).map(function(e) { return head(e).style[property] = value; }));
+	});
+}
+
 function href() {
 	return new IO(function() {
 		return window.location.href;
@@ -11,7 +17,7 @@ function href() {
 }
 
 function delay(time,f) {
-	return setTimeout(f,time)
+	return setTimeout(f,time);
 }
 
-var delay = curry(delay);
+var delay = curry(delay), style = curry(style);

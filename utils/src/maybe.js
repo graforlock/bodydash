@@ -15,6 +15,10 @@ Maybe.prototype.map = function (f) {
     return this.isNothing() ? Maybe.of(null) : Maybe.of(f(this.__value)); 
 }
 
+Maybe.prototype.join =  function() {
+	return this.isNothing() ? Maybe.of(null) : this.value;
+}
+
 var maybe = curry(function(x,f,m) { // Maybe helper for custom value (instead of 'null')
     return m.isNothing() ? x : f(m.__value);
  });

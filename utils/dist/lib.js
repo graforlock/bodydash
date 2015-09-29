@@ -4,30 +4,42 @@ function ajax() {
     return new XMLHttpRequest();
 }
 
-
 function JSONparse(res) {
     return JSON.parse(res);
 }
 
 //Refactor the GET to take composed callback-->> ajaxGET(url,target)
-
-function ajaxGET(url, cb) {
+function parametrize(params) {
+    params = obj(params);
+    var result = "";
+    keys = Object.keys(params);
+    keys.forEach(function(e,i) {
+            if(i !== 0) result += concat(concat('&',String(e)),concat('=',params[e]));
+            else result += concat(concat('?',String(e)),concat('=',params[e]));
+    });    
+    return result;
+}
+function getJSON(url,cb /*, params*/) {
+        // params = params || "";
+        // if(params) params = parametrize(params);
         url = str(url);
-        var xhr = ajax();
+        xhr = ajax();
         xhr.onreadystatechange = function() {
             if (xhr.status == 200 && xhr.readyState == 4) {
                 return cb(xhr.responseText);
             }
-            if (xhr.status == 404) throw new Error('Sever responded with 404: Not Found');
-            if (xhr.status == 500) throw new Error('Sever responded with 500: Internal Error');
+            if (xhr.status == 404) return new Error('404: Not Found');
+            if (xhr.status == 500) return new Error('500: Internal server Error.');
         }
-        xhr.open('GET', url);
+        xhr.open('GET', url /*+ params*/);
         xhr.send(null);
 }
 
 // Refactor POST like get -->> ajaxPOST(url,cb)
 
+function httpPOST(url) {
 // code here...
+}
 
 // -->>
 
@@ -66,11 +78,24 @@ function debounce(func, wait, immediate) {
     };
 };
 
+function debug(tag) {
+    tag = tag || "Debugger: "
+    return function(x) {
+        console.log(tag, x);
+        return x;
+    }
+}
 function select(selector) {
 	return new IO(function() {
 		return document.querySelectorAll(selector);
 	});
 } 
+
+function style(selector, property, value) {
+	return new IO(function() {
+		return join(select(selector).map(function(e) { return head(e).style[property] = value; }));
+	});
+}
 
 function href() {
 	return new IO(function() {
@@ -79,10 +104,10 @@ function href() {
 }
 
 function delay(time,f) {
-	return setTimeout(f,time)
+	return setTimeout(f,time);
 }
 
-var delay = curry(delay);
+var delay = curry(delay), style = curry(style);
 
 function Left(x) { 
     this.__value = x;
@@ -100,7 +125,7 @@ function Right(x) {
     this.__value = x;
 }
 
-Right.of = function() {
+Right.of = function(x) {
     return new Right(x);
 }
 
@@ -220,6 +245,14 @@ IO.of = function(x) {
 IO.prototype.map = function(f) {
 	return new IO(compose(f,this.__value));
 }
+
+IO.prototype.join = function() {
+	return this.__value();
+}
+
+IO.prototype.chain = function(f) { 
+	return this.map(f).join(); 
+}
 function lens(set, get) {
     var f = function(a) {
         return get(a);
@@ -243,7 +276,7 @@ function add(x,y) {
     return x+y;
 }
 
-function minus(x,y) {
+function subtract(x,y) {
     return x-y;
 }
 
@@ -263,8 +296,20 @@ function cube(x) {
     return square(x)*x;
 }
 
+function plusplus(x) {
+	return ++x;
+}
+
+function minusminus(x) {
+	return --x;
+}
+
+function rand(x) {
+	return Math.floor(Math.random() * x) + 1;
+}
+
 var add = curry(add),
-    minus = curry(minus),
+    subtract = curry(subtract),
     times = curry(times),
     divide = curry(divide);
 
@@ -282,6 +327,10 @@ Maybe.prototype.isNothing = function() {
 
 Maybe.prototype.map = function (f) { 
     return this.isNothing() ? Maybe.of(null) : Maybe.of(f(this.__value)); 
+}
+
+Maybe.prototype.join =  function() {
+	return this.isNothing() ? Maybe.of(null) : this.value;
 }
 
 var maybe = curry(function(x,f,m) { // Maybe helper for custom value (instead of 'null')
@@ -437,14 +486,6 @@ function compose() {
     }
 }
 
-function debug(tag) {
-    tag = tag || "Debugger: "
-    return function(x) {
-        console.log(tag, x);
-        return x;
-    }
-}
-
 function curry(fn) {
     var arity = fn.length;
 
@@ -487,30 +528,15 @@ function flipMany(fn) {
     };
 };
 
-
-function pipe() { 
-    var funcs, fargs, fcount = 0;
-
-        console.log(funcs);
-        [].slice.call(arguments).map(function(e) {
-            if(typeof e === 'function')
-                fcount += 1;
-        })
-        funcs = [].slice.call(arguments,0,fcount);
-        fargs = [].slice.call(arguments,fcount);
-        for (var i = 0; i < funcs.length;i++) {
-            fargs = [funcs[i].apply(this, fargs)];
-        }
-        if(fargs[0]) { var flipped = flip(pipe)(fargs[0]) };
-        return {
-            pipe: flipped,
-            exec: function(func) {
-                return func(fargs[0]);
-            }
-
-        }
+function join(monad) {
+    return monad.join();
 }
 
+function chain(f,m) {
+    return compose(join, map(f))(m);
+}
+
+var chain = curry(chain);
 
 function variadic(fn) {
     if (fn.length < 1) return fn;

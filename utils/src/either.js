@@ -15,7 +15,7 @@ function Right(x) {
     this.__value = x;
 }
 
-Right.of = function() {
+Right.of = function(x) {
     return new Right(x);
 }
 

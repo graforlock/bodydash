@@ -2,7 +2,7 @@ function add(x,y) {
     return x+y;
 }
 
-function minus(x,y) {
+function subtract(x,y) {
     return x-y;
 }
 
@@ -22,7 +22,19 @@ function cube(x) {
     return square(x)*x;
 }
 
+function plusplus(x) {
+	return ++x;
+}
+
+function minusminus(x) {
+	return --x;
+}
+
+function rand(x) {
+	return Math.floor(Math.random() * x) + 1;
+}
+
 var add = curry(add),
-    minus = curry(minus),
+    subtract = curry(subtract),
     times = curry(times),
     divide = curry(divide);
