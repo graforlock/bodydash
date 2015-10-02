@@ -1,4 +1,5 @@
 // OVERALL TODO: --->>> Will depend heavily on data.task through Browserify/CommonJS
+var Http = {};
 
 function ajax() {
     return new XMLHttpRequest();
@@ -8,37 +9,48 @@ function JSONparse(res) {
     return JSON.parse(res);
 }
 
+
 //Refactor the GET to take composed callback-->> ajaxGET(url,target)
-function parametrize(params) {
-    params = obj(params);
-    var result = "";
-    keys = Object.keys(params);
-    keys.forEach(function(e,i) {
-            if(i !== 0) result += concat(concat('&',String(e)),concat('=',params[e]));
-            else result += concat(concat('?',String(e)),concat('=',params[e]));
-    });    
-    return result;
-}
-function getJSON(url,cb /*, params*/) {
-        // params = params || "";
-        // if(params) params = parametrize(params);
-        url = str(url);
-        xhr = ajax();
-        xhr.onreadystatechange = function() {
-            if (xhr.status == 200 && xhr.readyState == 4) {
-                return cb(xhr.responseText);
-            }
-            if (xhr.status == 404) return new Error('404: Not Found');
-            if (xhr.status == 500) return new Error('500: Internal server Error.');
-        }
-        xhr.open('GET', url /*+ params*/);
-        xhr.send(null);
-}
+// function parametrize(params) {
+//     params = obj(params);
+//     var result = "";
+//     keys = Object.keys(params);
+//     keys.forEach(function(e,i) {
+//             if(i !== 0) result += concat(concat('&',String(e)),concat('=',params[e]));
+//             else result += concat(concat('?',String(e)),concat('=',params[e]));
+//     });    
+//     return result;
+// }
+// function getJSON(url) {
+//         // params = params || "";
+//         // if(params.toString() === '[ object Object ]') params = parametrize(params);
+//         url = str(url);
+//         xhr = ajax();
+//         xhr.onreadystatechange = function() {
+//             if (xhr.status == 200 && xhr.readyState == 4) {
+//                 return JSONparse(xhr.responseText); // remove callack dependency
+//             }
+//             if (xhr.status == 404) return new Error('404: Not Found');
+//             if (xhr.status == 500) return new Error('500: Internal server Error.');
+//         }
+//         xhr.open('GET', url /*+ params*/);
+//         xhr.send(null);
+// }
+
+Http.JSON = function(url, params) { 
+            return new Task(function(reject,result) {
+                return $.getJSON(url, params, result).fail(reject);
+            });
+};
 
 // Refactor POST like get -->> ajaxPOST(url,cb)
 
-function httpPOST(url) {
-// code here...
+Http.POST = function() {
+
+}
+
+Http.GET = function() {
+	
 }
 
 // -->>
@@ -78,23 +90,46 @@ function debounce(func, wait, immediate) {
     };
 };
 
-function debug(tag) {
-    tag = tag || "Debugger: "
-    return function(x) {
+function debug(tag,x) {
         console.log(tag, x);
         return x;
-    }
 }
+
+var debug = curry(debug);
+// function select(selector) {
+// 	return new IO(function() {
+// 		return document.querySelectorAll(selector);
+// 	});
+// } 
+
+// function querySelector(selector) {
+// 	return new IO(function() {
+// 		return document.querySelector(selector);
+// 	});
+// } 
+
 function select(selector) {
 	return new IO(function() {
-		return document.querySelectorAll(selector);
+		if(selector.indexOf('.') !== -1) return document.getElementsByClassName(selector.split('.').join(''));
+		if(selector.indexOf('#') !== -1) return document.getElementById(selector.split('#').join(''));
+		
+		return document.getElementsByTagName(selector);
+
 	});
-} 
+}
 
 function style(selector, property, value) {
 	return new IO(function() {
 		return join(select(selector).map(function(e) { return head(e).style[property] = value; }));
 	});
+}
+
+function addClass(cls, element) {
+		return element.className += " " + cls;
+}
+
+function removeElement(element) {
+	return element.style.display = 'none';
 }
 
 function href() {
@@ -104,10 +139,16 @@ function href() {
 }
 
 function delay(time,f) {
-	return setTimeout(f,time);
+	return setTimeout(function() {
+		return f.__value();
+	},time);
 }
 
-var delay = curry(delay), style = curry(style);
+function value(f) {
+	return f.__value();
+}
+
+var delay = curry(delay), style = curry(style), addClass = curry(addClass);
 
 function Left(x) { 
     this.__value = x;
@@ -253,6 +294,10 @@ IO.prototype.join = function() {
 IO.prototype.chain = function(f) { 
 	return this.map(f).join(); 
 }
+
+IO.prototype.each = function(f) {
+	return new IO(each(f, this.__value()));
+}
 function lens(set, get) {
     var f = function(a) {
         return get(a);
@@ -267,7 +312,8 @@ function lens(set, get) {
     return f;
 }
 function map(f,xs) {
-    return xs.map(f);
+
+    return xs.toString() === '[object NodeList]' ? each(f,xs) : xs.map(f);
 }
 
 var map = curry(map); // Pointfree map 
@@ -330,7 +376,7 @@ Maybe.prototype.map = function (f) {
 }
 
 Maybe.prototype.join =  function() {
-	return this.isNothing() ? Maybe.of(null) : this.value;
+	return this.isNothing() ? Maybe.of(null) : this.__value;
 }
 
 var maybe = curry(function(x,f,m) { // Maybe helper for custom value (instead of 'null')
@@ -635,8 +681,12 @@ function arrArr(a) {
     return arrayOf(arr)(a);
 }
 
-function toArray(arr) {
-    return [].slice.call(arr);
+function toArray(array) {
+    return [array];
+}
+
+function safeArray(array) {
+    return new Maybe([].slice.call(array));
 }
 
 //--->>> Object utils
@@ -662,7 +712,11 @@ function protoOf(o) {
     return Object.getPrototypeOf(o);
 }
 
-var prop = curry(prop);
+var prop = curry(prop),
+    safeProp = curry(function(x,o) { return new Maybe(o[x]);}),
+    safeHead = safeProp(0);
+
+
 
 //--->>> Arrays
 
@@ -674,4 +728,10 @@ function last(xs) {
     return xs[xs.length-1];
 }
 
-var slice = Array.prototype.slice;
+function each(cb, array) { // nodeLists
+  for (var i = 0; i < array.length; i++) {
+         cb.call(null,array[i]); 
+  }
+};
+
+var slice = Array.prototype.slice, each = curry(each);

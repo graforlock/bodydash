@@ -19,3 +19,7 @@ IO.prototype.join = function() {
 IO.prototype.chain = function(f) { 
 	return this.map(f).join(); 
 }
+
+IO.prototype.each = function(f) {
+	return new IO(each(f, this.__value()));
+}

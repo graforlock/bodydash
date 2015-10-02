@@ -1,7 +1,6 @@
-function debug(tag) {
-    tag = tag || "Debugger: "
-    return function(x) {
+function debug(tag,x) {
         console.log(tag, x);
         return x;
-    }
 }
+
+var debug = curry(debug);

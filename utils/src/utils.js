@@ -165,8 +165,12 @@ function arrArr(a) {
     return arrayOf(arr)(a);
 }
 
-function toArray(arr) {
-    return [].slice.call(arr);
+function toArray(array) {
+    return [array];
+}
+
+function safeArray(array) {
+    return new Maybe([].slice.call(array));
 }
 
 //--->>> Object utils
@@ -192,7 +196,11 @@ function protoOf(o) {
     return Object.getPrototypeOf(o);
 }
 
-var prop = curry(prop);
+var prop = curry(prop),
+    safeProp = curry(function(x,o) { return new Maybe(o[x]);}),
+    safeHead = safeProp(0);
+
+
 
 //--->>> Arrays
 
@@ -204,4 +212,10 @@ function last(xs) {
     return xs[xs.length-1];
 }
 
-var slice = Array.prototype.slice;
+function each(cb, array) { // nodeLists
+  for (var i = 0; i < array.length; i++) {
+         cb.call(null,array[i]); 
+  }
+};
+
+var slice = Array.prototype.slice, each = curry(each);
