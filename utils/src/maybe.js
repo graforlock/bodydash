@@ -19,6 +19,12 @@ Maybe.prototype.join =  function() {
 	return this.isNothing() ? Maybe.of(null) : this.__value;
 }
 
-var maybe = curry(function(x,f,m) { // Maybe helper for custom value (instead of 'null')
+Maybe.prototype.ap = function(other) {
+	return other.map(this.__value); 
+	// Functor requirement: It maps (other Functor's map) over current Functor's __value.
+}
+
+var maybe = curry(function(x,f,m) { 
     return m.isNothing() ? x : f(m.__value);
+	// Maybe helper for custom value (instead of 'null')
  });

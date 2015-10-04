@@ -20,6 +20,10 @@ IO.prototype.chain = function(f) {
 	return this.map(f).join(); 
 }
 
-IO.prototype.each = function(f) {
-	return new IO(each(f, this.__value()));
+IO.prototype.each = function(f) { // Impure function call, reserved for DOM
+	return new IO(each(f, this.__value() ));
+}
+
+IO.prototype.ap = function(other) {
+	return other.map(this.__value()); // Function requirement
 }

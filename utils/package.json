@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "browserify": "^11.2.0",
+    "buildify": "^0.4.0",
     "data.task": "^3.0.0",
     "gulp-concat": "^2.6.0",
     "gulp-notify": "^2.2.0",

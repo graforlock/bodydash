@@ -6,7 +6,6 @@ var notify = require('gulp-notify'),
 	uglify = require('gulp-uglify'),
 	concat = require('gulp-concat');
 
-
 var files= {};
 
 files.js = {
@@ -38,6 +37,8 @@ gulp.task('js', function() {
   .pipe(plumber(files.notify.js))
   .pipe(gulp.dest(files.js.dist));
 });
+
+
 
 
 gulp.task('default',['js']);

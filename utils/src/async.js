@@ -49,7 +49,7 @@ Http.POST = function() {
 
 }
 
-Http.GET = function() {
+Http.GET = function(url) {
 	
 }
 

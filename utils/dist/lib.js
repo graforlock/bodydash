@@ -49,7 +49,7 @@ Http.POST = function() {
 
 }
 
-Http.GET = function() {
+Http.GET = function(url) {
 	
 }
 
@@ -128,6 +128,11 @@ function addClass(cls, element) {
 		return element.className += " " + cls;
 }
 
+function removeClass(cls, ele) {
+        var reg = new RegExp('(\\s|^)'+cls+'(\\s|$)');
+        ele.className=ele.className.replace(reg,' ');
+}
+
 function removeElement(element) {
 	return element.style.display = 'none';
 }
@@ -144,11 +149,14 @@ function delay(time,f) {
 	},time);
 }
 
-function value(f) {
-	return f.__value();
+
+function getItem(key) { 
+	return new IO(function() { 
+		return localStorage.getItem(key); 
+	}); 
 }
 
-var delay = curry(delay), style = curry(style), addClass = curry(addClass);
+var delay = curry(delay), style = curry(style), addClass = curry(addClass), removeClass = curry(removeClass);
 
 function Left(x) { 
     this.__value = x;
@@ -295,8 +303,12 @@ IO.prototype.chain = function(f) {
 	return this.map(f).join(); 
 }
 
-IO.prototype.each = function(f) {
-	return new IO(each(f, this.__value()));
+IO.prototype.each = function(f) { // Impure function call, reserved for DOM
+	return new IO(each(f, this.__value() ));
+}
+
+IO.prototype.ap = function(other) {
+	return other.map(this.__value()); // Function requirement
 }
 function lens(set, get) {
     var f = function(a) {
@@ -311,9 +323,22 @@ function lens(set, get) {
     };
     return f;
 }
+function liftA2(f,functor1,functor2) {
+	return functor1.map(f).ap(functor2);
+} 
+
+function liftA3(f,functor1,functor2,functor3) {
+	return functor1.map(f).ap(functor2).ap(functor3);
+}
+
+function liftA4(f,functor1,functor2,functor3) {
+	return functor1.map(f).ap(functor2).ap(functor3);
+}
+
+var liftA2 = curry(liftA2), liftA3 = curry(liftA3), liftA4 = curry(liftA4);
 function map(f,xs) {
 
-    return xs.toString() === '[object NodeList]' ? each(f,xs) : xs.map(f);
+    return xs.map(f);
 }
 
 var map = curry(map); // Pointfree map 
@@ -379,8 +404,14 @@ Maybe.prototype.join =  function() {
 	return this.isNothing() ? Maybe.of(null) : this.__value;
 }
 
-var maybe = curry(function(x,f,m) { // Maybe helper for custom value (instead of 'null')
+Maybe.prototype.ap = function(other) {
+	return other.map(this.__value); 
+	// Functor requirement: It maps (other Functor's map) over current Functor's __value.
+}
+
+var maybe = curry(function(x,f,m) { 
     return m.isNothing() ? x : f(m.__value);
+	// Maybe helper for custom value (instead of 'null')
  });
 
 function memoize(fn,keymaker) {
@@ -532,6 +563,11 @@ function compose() {
     }
 }
 
+
+function mcompose(f,g) { // Monad/Functor compose
+    return compose(chain(f), chain(g));
+}
+
 function curry(fn) {
     var arity = fn.length;
 
@@ -579,7 +615,7 @@ function join(monad) {
 }
 
 function chain(f,m) {
-    return compose(join, map(f))(m);
+    return m.map(f).join();
 }
 
 var chain = curry(chain);
@@ -704,7 +740,7 @@ function hasOwn(o, name) {
     return !inProto(o, name);
 }
 
-function prop(obj,key) {
+function prop(key,obj) {
     return obj[key];
 }
 

@@ -224,3 +224,70 @@ function each(cb, array) { // nodeLists
 };
 
 var slice = Array.prototype.slice, each = curry(each);
+
+function Maybe(x) {
+    this.__value = x;
+}
+
+Maybe.of = function(x) {
+    return new Maybe(x);
+}
+
+Maybe.prototype.isNothing = function() {
+    return (this.__value === null || this.__value === undefined);
+}
+
+Maybe.prototype.map = function (f) { 
+    return this.isNothing() ? Maybe.of(null) : Maybe.of(f(this.__value)); 
+}
+
+Maybe.prototype.join =  function() {
+	return this.isNothing() ? Maybe.of(null) : this.__value;
+}
+
+Maybe.prototype.ap = function(other) {
+	return other.map(this.__value); 
+	// Functor requirement: It maps (other Functor's map) over current Functor's __value.
+}
+
+var maybe = curry(function(x,f,m) { 
+    return m.isNothing() ? x : f(m.__value);
+	// Maybe helper for custom value (instead of 'null')
+ });
+
+function map(f,xs) {
+
+    return xs.map(f);
+}
+
+var map = curry(map); // Pointfree map 
+
+function IO(f) {
+	this.__value = f;
+}
+
+IO.of = function(x) {
+	return new IO(function() {
+		return x;
+	});
+}
+
+IO.prototype.map = function(f) {
+	return new IO(compose(f,this.__value));
+}
+
+IO.prototype.join = function() {
+	return this.__value();
+}
+
+IO.prototype.chain = function(f) { 
+	return this.map(f).join(); 
+}
+
+IO.prototype.each = function(f) { // Impure function call, reserved for DOM
+	return new IO(each(f, this.__value() ));
+}
+
+IO.prototype.ap = function(other) {
+	return other.map(this.__value()); // Function requirement
+}

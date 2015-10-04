@@ -30,6 +30,11 @@ function addClass(cls, element) {
 		return element.className += " " + cls;
 }
 
+function removeClass(cls, ele) {
+        var reg = new RegExp('(\\s|^)'+cls+'(\\s|$)');
+        ele.className=ele.className.replace(reg,' ');
+}
+
 function removeElement(element) {
 	return element.style.display = 'none';
 }
@@ -46,8 +51,11 @@ function delay(time,f) {
 	},time);
 }
 
-function value(f) {
-	return f.__value();
+
+function getItem(key) { 
+	return new IO(function() { 
+		return localStorage.getItem(key); 
+	}); 
 }
 
-var delay = curry(delay), style = curry(style), addClass = curry(addClass);
+var delay = curry(delay), style = curry(style), addClass = curry(addClass), removeClass = curry(removeClass);
