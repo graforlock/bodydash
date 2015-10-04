@@ -1,14 +1,3 @@
-// function select(selector) {
-// 	return new IO(function() {
-// 		return document.querySelectorAll(selector);
-// 	});
-// } 
-
-// function querySelector(selector) {
-// 	return new IO(function() {
-// 		return document.querySelector(selector);
-// 	});
-// } 
 
 function select(selector) {
 	return new IO(function() {
@@ -38,7 +27,9 @@ function removeClass(cls, ele) {
 function removeElement(element) {
 	return element.style.display = 'none';
 }
-
+function children(element) {
+	return element.children;
+}
 function href() {
 	return new IO(function() {
 		return window.location.href;

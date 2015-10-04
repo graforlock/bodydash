@@ -96,17 +96,6 @@ function debug(tag,x) {
 }
 
 var debug = curry(debug);
-// function select(selector) {
-// 	return new IO(function() {
-// 		return document.querySelectorAll(selector);
-// 	});
-// } 
-
-// function querySelector(selector) {
-// 	return new IO(function() {
-// 		return document.querySelector(selector);
-// 	});
-// } 
 
 function select(selector) {
 	return new IO(function() {
@@ -136,7 +125,9 @@ function removeClass(cls, ele) {
 function removeElement(element) {
 	return element.style.display = 'none';
 }
-
+function children(element) {
+	return element.children;
+}
 function href() {
 	return new IO(function() {
 		return window.location.href;
@@ -519,7 +510,15 @@ function Router(routes) {
 function toLower(a) {
     return a.toLowerCase();
 }
-var toLower = curry(toLower);
+function toUpper(a) {
+    return a.toUpperCase();
+}
+
+function capitalise(a) {
+	return concat(toUpper(head(a)),a.slice(1)); 
+}
+
+var toLower = curry(toLower), toUpper = curry(toUpper);
 
 function concat(a,b) {
     return a.concat(b);

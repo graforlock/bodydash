@@ -224,44 +224,6 @@ function each(cb, array) { // nodeLists
 };
 
 var slice = Array.prototype.slice, each = curry(each);
-
-function Maybe(x) {
-    this.__value = x;
-}
-
-Maybe.of = function(x) {
-    return new Maybe(x);
-}
-
-Maybe.prototype.isNothing = function() {
-    return (this.__value === null || this.__value === undefined);
-}
-
-Maybe.prototype.map = function (f) { 
-    return this.isNothing() ? Maybe.of(null) : Maybe.of(f(this.__value)); 
-}
-
-Maybe.prototype.join =  function() {
-	return this.isNothing() ? Maybe.of(null) : this.__value;
-}
-
-Maybe.prototype.ap = function(other) {
-	return other.map(this.__value); 
-	// Functor requirement: It maps (other Functor's map) over current Functor's __value.
-}
-
-var maybe = curry(function(x,f,m) { 
-    return m.isNothing() ? x : f(m.__value);
-	// Maybe helper for custom value (instead of 'null')
- });
-
-function map(f,xs) {
-
-    return xs.map(f);
-}
-
-var map = curry(map); // Pointfree map 
-
 function IO(f) {
 	this.__value = f;
 }
@@ -291,3 +253,155 @@ IO.prototype.each = function(f) { // Impure function call, reserved for DOM
 IO.prototype.ap = function(other) {
 	return other.map(this.__value()); // Function requirement
 }
+
+function select(selector) {
+	return new IO(function() {
+		if(selector.indexOf('.') !== -1) return document.getElementsByClassName(selector.split('.').join(''));
+		if(selector.indexOf('#') !== -1) return document.getElementById(selector.split('#').join(''));
+		
+		return document.getElementsByTagName(selector);
+
+	});
+}
+
+function style(selector, property, value) {
+	return new IO(function() {
+		return join(select(selector).map(function(e) { return head(e).style[property] = value; }));
+	});
+}
+
+function addClass(cls, element) {
+		return element.className += " " + cls;
+}
+
+function removeClass(cls, ele) {
+        var reg = new RegExp('(\\s|^)'+cls+'(\\s|$)');
+        ele.className=ele.className.replace(reg,' ');
+}
+
+function removeElement(element) {
+	return element.style.display = 'none';
+}
+function children(element) {
+	return element.children;
+}
+function href() {
+	return new IO(function() {
+		return window.location.href;
+	});
+}
+
+function delay(time,f) {
+	return setTimeout(function() {
+		return f.__value();
+	},time);
+}
+
+
+function getItem(key) { 
+	return new IO(function() { 
+		return localStorage.getItem(key); 
+	}); 
+}
+
+var delay = curry(delay), style = curry(style), addClass = curry(addClass), removeClass = curry(removeClass);
+function map(f,xs) {
+
+    return xs.map(f);
+}
+
+var map = curry(map); // Pointfree map 
+
+function liftA2(f,functor1,functor2) {
+	return functor1.map(f).ap(functor2);
+} 
+
+function liftA3(f,functor1,functor2,functor3) {
+	return functor1.map(f).ap(functor2).ap(functor3);
+}
+
+function liftA4(f,functor1,functor2,functor3) {
+	return functor1.map(f).ap(functor2).ap(functor3);
+}
+
+var liftA2 = curry(liftA2), liftA3 = curry(liftA3), liftA4 = curry(liftA4);
+// OVERALL TODO: --->>> Will depend heavily on data.task through Browserify/CommonJS
+var Http = {};
+
+function ajax() {
+    return new XMLHttpRequest();
+}
+
+function JSONparse(res) {
+    return JSON.parse(res);
+}
+
+
+//Refactor the GET to take composed callback-->> ajaxGET(url,target)
+// function parametrize(params) {
+//     params = obj(params);
+//     var result = "";
+//     keys = Object.keys(params);
+//     keys.forEach(function(e,i) {
+//             if(i !== 0) result += concat(concat('&',String(e)),concat('=',params[e]));
+//             else result += concat(concat('?',String(e)),concat('=',params[e]));
+//     });    
+//     return result;
+// }
+// function getJSON(url) {
+//         // params = params || "";
+//         // if(params.toString() === '[ object Object ]') params = parametrize(params);
+//         url = str(url);
+//         xhr = ajax();
+//         xhr.onreadystatechange = function() {
+//             if (xhr.status == 200 && xhr.readyState == 4) {
+//                 return JSONparse(xhr.responseText); // remove callack dependency
+//             }
+//             if (xhr.status == 404) return new Error('404: Not Found');
+//             if (xhr.status == 500) return new Error('500: Internal server Error.');
+//         }
+//         xhr.open('GET', url /*+ params*/);
+//         xhr.send(null);
+// }
+
+Http.JSON = function(url, params) { 
+            return new Task(function(reject,result) {
+                return $.getJSON(url, params, result).fail(reject);
+            });
+};
+
+// Refactor POST like get -->> ajaxPOST(url,cb)
+
+Http.POST = function() {
+
+}
+
+Http.GET = function(url) {
+	
+}
+
+// -->>
+
+// Create ajaxJSONP out of it: -->>
+
+// var scr = document.createElement('script')
+// scr.src = '//openexchangerates.org/latest.json?callback=formatCurrency'
+// document.body.appendChild(scr)
+function toLower(a) {
+    return a.toLowerCase();
+}
+function toUpper(a) {
+    return a.toUpperCase();
+}
+
+function capitalise(a) {
+	return concat(toUpper(head(a)),a.slice(1)); 
+}
+
+var toLower = curry(toLower), toUpper = curry(toUpper);
+
+function concat(a,b) {
+    return a.concat(b);
+}
+
+var concat = curry(concat);
