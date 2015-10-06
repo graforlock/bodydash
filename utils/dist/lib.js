@@ -134,12 +134,19 @@ function href() {
 	});
 }
 
-function delay(time,f) {
-	return setTimeout(function() {
-		return f.__value();
-	},time);
-}
+// function delay(time,f) {
+// 	return setTimeout(function() {
+// 		return f.__value();
+// 	},time);
+// }
 
+function delay(time,f) {
+  return new Task(function(rej, res) {
+    setTimeout(function () {
+      return res(f.__value());
+    }, time);
+  });
+}
 
 function getItem(key) { 
 	return new IO(function() { 
@@ -192,6 +199,30 @@ function findEvent(event) {
         throw new Error(this.constructor.name + ': Property "' + event +'" Not Found on the Object');
 }
 
+// function Events(target) {
+//     return new IO(function() {
+//         return target;
+//     });
+// }
+
+function listener(f,ev,node) {
+    // or again return IO wrap!?!??!
+    return node.addEventListener(ev,f,false);
+}
+
+function on(event) {
+    return new IO(function() {
+        return event;
+    });
+}
+
+var listener = curry(listener);
+var eventStream = curry(function(node,ev,f) {
+   return liftA2(listener(f),on(ev),select(node));
+});
+
+
+
 function Events(target) {
 
     this.target = target;
@@ -207,6 +238,17 @@ function Events(target) {
         // On POST do:
         console.log('Executing on post!');
     };
+}
+
+// var ev = IO.of(func).ap(select('button')).ap(EventStream);
+// APPLICATIVE FUNCTOR
+
+function EventStream(nodelist,event) {
+    new IO(function() {
+        return curry(function(f) {
+            nodelist.addEventListener(event,f);
+        });
+    });
 }
 
 
@@ -399,6 +441,10 @@ Maybe.prototype.ap = function(other) {
 	return other.map(this.__value); 
 	// Functor requirement: It maps (other Functor's map) over current Functor's __value.
 }
+
+// Maybe.prototype.ap = function(vs) {
+//       return (typeof this.value !== 'function') ? new Maybe(null) : vs.map(this.value);
+//     };
 
 var maybe = curry(function(x,f,m) { 
     return m.isNothing() ? x : f(m.__value);

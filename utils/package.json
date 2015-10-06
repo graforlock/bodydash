@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "custom" : "lib/custom.js"
+    "custom": "lib/custom.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "gulp": "^3.9.0"
+    "gulp": "^3.9.0",
+    "tape": "^4.2.1"
   },
   "devDependencies": {
     "browserify": "^11.2.0",

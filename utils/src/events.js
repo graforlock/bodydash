@@ -11,6 +11,33 @@ function findEvent(event) {
         throw new Error(this.constructor.name + ': Property "' + event +'" Not Found on the Object');
 }
 
+// function Events(target) {
+//     return new IO(function() {
+//         return target;
+//     });
+// }
+
+function listener(f,ev,node) {
+    // or again return IO wrap, Remove 'f' dependency, include .__value dependency for a final call
+    // would have to include next function that is basically eventListener(ev,node,f) -> IO
+    return node.addEventListener(ev,f,false);
+}
+
+var listener = curry(listener);
+
+
+function on(event) {
+    return new IO(function() {
+        return event;
+    });
+}
+
+var EventStream = curry(function(node,ev,f) {
+   return liftA2(listener(f),on(ev),select(node));
+});
+
+
+
 function Events(target) {
 
     this.target = target;

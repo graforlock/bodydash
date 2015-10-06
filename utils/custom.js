@@ -6,11 +6,11 @@ var args = [].slice.call(process.argv,2);
 var folder = {};
 
 folder.src = {
-	path: '/../src/'
+	path: 'src/'
 }
 
 folder.dest = {
-	custom: '/../custom/'
+	custom: 'custom/'
 }
 
 var core = folder.src.path + 'utils.js';

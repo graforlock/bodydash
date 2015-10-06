@@ -36,12 +36,19 @@ function href() {
 	});
 }
 
-function delay(time,f) {
-	return setTimeout(function() {
-		return f.__value();
-	},time);
-}
+// function delay(time,f) {
+// 	return setTimeout(function() {
+// 		return f.__value();
+// 	},time);
+// }
 
+function delay(time,f) {
+  return new Task(function(rej, res) {
+    setTimeout(function () {
+      return res(f.__value());
+    }, time);
+  });
+}
 
 function getItem(key) { 
 	return new IO(function() { 
