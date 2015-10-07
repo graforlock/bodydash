@@ -34,10 +34,15 @@ function on(event) {
     });
 }
 
-var EventStream = curry(function(node,ev) {
-   return liftA2(listener,on(ev),select(node));
-});
+// var EventStream = curry(function(node,ev) {
+//    return liftA2(listener,on(ev),select(node));
+// });
 
+function EventStream(node,ev) {
+   return liftA2(listener,on(ev),select(node));
+};
+
+var EventStream = curry(EventStream);
 
 function Events(target) {
 //Some Lame OOP...

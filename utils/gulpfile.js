@@ -26,6 +26,7 @@ gulp.task('js-min', ['js'],function() {
   return gulp.src(files.js.src)
   .pipe(concat('lib.min.js'))
   .pipe(uglify())
+  // jslint/jshint here
   .pipe(plumber(files.notify.js))
   .pipe(gulp.dest(files.js.dist));
 });
@@ -34,6 +35,7 @@ gulp.task('js-min', ['js'],function() {
 gulp.task('js', function() {
   return gulp.src(files.js.src)
   .pipe(concat('lib.js'))
+  // jslint/jshint here
   .pipe(plumber(files.notify.js))
   .pipe(gulp.dest(files.js.dist));
 });

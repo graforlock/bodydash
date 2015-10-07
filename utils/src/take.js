@@ -4,4 +4,9 @@ function take(n,xs) {
     return xs.filter(function(e,i) { return i < n;})
 }
 
-var take =  curry(take); // Pointfree take
+function skip(n,xs) {
+	n = num(n);
+	return xs.filter(function(e,i) { return i > n});
+}
+
+var take =  curry(take), skip = curry(skip);

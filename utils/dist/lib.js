@@ -222,10 +222,15 @@ function on(event) {
     });
 }
 
-var EventStream = curry(function(node,ev) {
-   return liftA2(listener,on(ev),select(node));
-});
+// var EventStream = curry(function(node,ev) {
+//    return liftA2(listener,on(ev),select(node));
+// });
 
+function EventStream(node,ev) {
+   return liftA2(listener,on(ev),select(node));
+};
+
+var EventStream = curry(EventStream);
 
 function Events(target) {
 //Some Lame OOP...
@@ -327,13 +332,17 @@ IO.prototype.join = function() {
 }
 
 IO.prototype.log = function() {
-	var f =  this.__value;
+	var f = this.__value;
 	this.__value()(function(e) {
 		console.log('Logging Event: '  + e);
 		
 	});
 	return new IO(f); 
 }
+
+IO.prototype.take = take; // should take only this many events
+
+IO.prototype.skip = skip; // skips initial events
 
 IO.prototype.chain = function(f) { 
 	return this.map(f).join(); 
@@ -347,7 +356,8 @@ IO.prototype.ap = function(other) {
 	return other.map(this.__value()); // Function requirement
 }
 
-// TODO: take, merge, concat
+// TODO: take, skip, 
+//       merge, concat -> Monoid
 function lens(set, get) {
     var f = function(a) {
         return get(a);
@@ -582,7 +592,12 @@ function take(n,xs) {
     return xs.filter(function(e,i) { return i < n;})
 }
 
-var take =  curry(take); // Pointfree take
+function skip(n,xs) {
+	n = num(n);
+	return xs.filter(function(e,i) { return i > n});
+}
+
+var take =  curry(take), skip = curry(skip);
 
 function User() { // Either for password
     this.username = null;

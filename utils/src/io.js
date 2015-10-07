@@ -8,7 +8,7 @@ IO.of = function(x) {
 	});
 }
 
-IO.prototype.map = function(f) {
+IO.prototype.map = function(f) { // map is perfect for Event Streams
 	return new IO(compose(f,this.__value));
 }
 
@@ -17,13 +17,17 @@ IO.prototype.join = function() {
 }
 
 IO.prototype.log = function() {
-	var f =  this.__value;
+	var f = this.__value;
 	this.__value()(function(e) {
 		console.log('Logging Event: '  + e);
 		
 	});
 	return new IO(f); 
 }
+
+IO.prototype.take = take; // should take only this many events
+
+IO.prototype.skip = skip; // skips initial events
 
 IO.prototype.chain = function(f) { 
 	return this.map(f).join(); 
@@ -37,4 +41,5 @@ IO.prototype.ap = function(other) {
 	return other.map(this.__value()); // Function requirement
 }
 
-// TODO: take, merge, concat
+// TODO: take, skip, 
+//       merge, concat -> Monoid
