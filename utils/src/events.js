@@ -17,10 +17,12 @@ function findEvent(event) {
 //     });
 // }
 
-function listener(f,ev,node) {
+function listener(ev,node) {
     // or again return IO wrap, Remove 'f' dependency, include .__value dependency for a final call
     // would have to include next function that is basically eventListener(ev,node,f) -> IO
-    return node.addEventListener(ev,f,false);
+    return new IO(curry(function(f) {
+        return node.addEventListener(ev,f,false);
+    })).join();
 }
 
 var listener = curry(listener);
@@ -32,13 +34,13 @@ function on(event) {
     });
 }
 
-var EventStream = curry(function(node,ev,f) {
-   return liftA2(listener(f),on(ev),select(node));
+var EventStream = curry(function(node,ev) {
+   return liftA2(listener,on(ev),select(node));
 });
 
 
-
 function Events(target) {
+//Some Lame OOP...
 
     this.target = target;
     this.fetched = function() {

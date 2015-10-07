@@ -205,10 +205,16 @@ function findEvent(event) {
 //     });
 // }
 
-function listener(f,ev,node) {
-    // or again return IO wrap!?!??!
-    return node.addEventListener(ev,f,false);
+function listener(ev,node) {
+    // or again return IO wrap, Remove 'f' dependency, include .__value dependency for a final call
+    // would have to include next function that is basically eventListener(ev,node,f) -> IO
+    return new IO(curry(function(f) {
+        return node.addEventListener(ev,f,false);
+    })).join();
 }
+
+var listener = curry(listener);
+
 
 function on(event) {
     return new IO(function() {
@@ -216,14 +222,13 @@ function on(event) {
     });
 }
 
-var listener = curry(listener);
-var eventStream = curry(function(node,ev,f) {
-   return liftA2(listener(f),on(ev),select(node));
+var EventStream = curry(function(node,ev) {
+   return liftA2(listener,on(ev),select(node));
 });
 
 
-
 function Events(target) {
+//Some Lame OOP...
 
     this.target = target;
     this.fetched = function() {
@@ -238,17 +243,6 @@ function Events(target) {
         // On POST do:
         console.log('Executing on post!');
     };
-}
-
-// var ev = IO.of(func).ap(select('button')).ap(EventStream);
-// APPLICATIVE FUNCTOR
-
-function EventStream(nodelist,event) {
-    new IO(function() {
-        return curry(function(f) {
-            nodelist.addEventListener(event,f);
-        });
-    });
 }
 
 
@@ -332,6 +326,15 @@ IO.prototype.join = function() {
 	return this.__value();
 }
 
+IO.prototype.log = function() {
+	var f =  this.__value;
+	this.__value()(function(e) {
+		console.log('Logging Event: '  + e);
+		
+	});
+	return new IO(f); 
+}
+
 IO.prototype.chain = function(f) { 
 	return this.map(f).join(); 
 }
@@ -343,6 +346,8 @@ IO.prototype.each = function(f) { // Impure function call, reserved for DOM
 IO.prototype.ap = function(other) {
 	return other.map(this.__value()); // Function requirement
 }
+
+// TODO: take, merge, concat
 function lens(set, get) {
     var f = function(a) {
         return get(a);
