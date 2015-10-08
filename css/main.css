@@ -28,8 +28,30 @@ font-family: 'Gochi Hand', cursive;
 font-family: 'Yellowtail', cursive;
 font-family: 'Knewave', cursive;
 */
+#frame1, #frame2, #frame3, #frame4 {
+	position: absolute;
+	height: 100px;
+	width: 100px;
+}
 
+#frame1 {
+	background-color: red;
+}
 
+#frame2 {
+	background-color: yellow;
+
+}
+
+#frame3 {
+	background-color: black;
+
+}
+
+#frame4 {
+	background-color: green;
+
+}
 
 body {
 	margin: 0;

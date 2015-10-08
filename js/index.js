@@ -50,9 +50,5 @@ button.addEventListener('click', function() {
 }, false);
 
 
-
-
-
-
 // Useful Externals for Node.js ->> moment, accounting, 
 // Other ->> requirejs)

@@ -11,13 +11,17 @@ function select(selector) {
 
 function style(selector, property, value) {
 	return new IO(function() {
-		return join(select(selector).map(function(e) { return head(e).style[property] = value; }));
+		return select(selector).map(function(e) {  e.style[property] = value; }).join();
 	});
 }
 
-function addClass(cls, element) {
-		return element.className += " " + cls;
-}
+	function addClass(cls, element) { // add map to elements and wrap in IO
+		return new IO(function() {
+			return each(function(e) { // can't be map :(
+				return e.className += " " + cls;
+			},element.__value());
+		})
+}	
 
 function removeClass(cls, ele) {
         var reg = new RegExp('(\\s|^)'+cls+'(\\s|$)');
@@ -36,18 +40,10 @@ function href() {
 	});
 }
 
-// function delay(time,f) {
-// 	return setTimeout(function() {
-// 		return f.__value();
-// 	},time);
-// }
-
 function delay(time,f) {
-  return new Task(function(rej, res) {
     setTimeout(function () {
-      return res(f.__value());
+    	return f.__value();
     }, time);
-  });
 }
 
 function getItem(key) { 

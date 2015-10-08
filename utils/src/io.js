@@ -25,6 +25,13 @@ IO.prototype.log = function() {
 	return new IO(f); 
 }
 
+IO.prototype.delay = function(time) {
+	f = this.__value;
+	 setTimeout(function () {
+    	return f();
+    }, time);
+}
+
 IO.prototype.take = take; // should take only this many events
 
 IO.prototype.skip = skip; // skips initial events
