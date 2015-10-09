@@ -22,7 +22,7 @@ function listener(ev,node) {
     // would have to include next function that is basically eventListener(ev,node,f) -> IO
     return new IO(curry(function(f) {
         return node.addEventListener(ev,f,false);
-    })).join();
+    }));
 }
 
 var listener = curry(listener);
