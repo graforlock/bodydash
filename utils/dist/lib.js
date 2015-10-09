@@ -107,18 +107,24 @@ function select(selector) {
 	});
 }
 
+function selectOne(selector) {
+	return new IO(function() {
+		return document.querySelector(selector);
+	});
+}
+
 function style(selector, property, value) {
 	return new IO(function() {
 		return select(selector).map(function(e) {  e.style[property] = value; }).join();
 	});
 }
 
-	function addClass(cls, element) { // add map to elements and wrap in IO
-		return new IO(function() {
-			return each(function(e) { // can't be map :(
-				return e.className += " " + cls;
-			},element.__value());
-		})
+function addClass(cls, element) { // add map to elements and wrap in IO
+	return new IO(function() {
+		return each(function(e) { // can't be map :(
+			return e.className += " " + cls;
+		},element.__value());
+	})
 }	
 
 function removeClass(cls, ele) {
@@ -194,12 +200,6 @@ function findEvent(event) {
     else
         throw new Error(this.constructor.name + ': Property "' + event +'" Not Found on the Object');
 }
-
-// function Events(target) {
-//     return new IO(function() {
-//         return target;
-//     });
-// }
 
 function listener(ev,node) {
     // or again return IO wrap, Remove 'f' dependency, include .__value dependency for a final call
@@ -321,6 +321,29 @@ IO.of = function(x) {
 
 IO.prototype.map = function(f) { // map is perfect for Event Streams
 	return new IO(compose(f,this.__value));
+	
+	/*  'f' can be the wrapper function for the monad this.__value ->
+	__________________________________________________________
+		 Sample use:
+	----------------------------------------------------------
+		 EventStream('#action','click')
+		.map(function(e) { return e.__value(debug(': '));})
+		.__value()
+	----------------------------------------------------------
+	*/
+}
+
+IO.prototype.emap = function(f) {
+	// var value = this.__value;
+	// return this.chain(); Has to take up the below structure
+	// return this.map(function(e) {
+	// 	return new IO(compose(e.__value,f)); 
+	// 	// it will lose IO; has to be some means to prevent it
+	// });	
+	return this.chain(function(e) {
+		return new IO(compose(e.__value,f)); 
+		// it will lose IO; has to be some means to prevent it
+	});
 }
 
 
@@ -351,10 +374,15 @@ IO.prototype.delay = function(time) {
     }, time);
 }
 
-// IO.prototype.take = take; // should take only this many events
+IO.prototype.out = function() {
+	return this.__value();
+}
 
+IO.prototype.take = function() {
+	// lookup emap
+}
 IO.prototype.skip = function(num) {
-	// var f = this.__value;
+	// lookup emap
 
 }
 IO.prototype.chain = function(f) { 

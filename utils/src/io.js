@@ -22,6 +22,19 @@ IO.prototype.map = function(f) { // map is perfect for Event Streams
 	*/
 }
 
+IO.prototype.emap = function(f) {
+	// var value = this.__value;
+	// return this.chain(); Has to take up the below structure
+	// return this.map(function(e) {
+	// 	return new IO(compose(e.__value,f)); 
+	// 	// it will lose IO; has to be some means to prevent it
+	// });	
+	return this.chain(function(e) {
+		return new IO(compose(e.__value,f)); 
+		// it will lose IO; has to be some means to prevent it
+	});
+}
+
 
 IO.prototype.join = function() {
 	return this.__value();
@@ -50,10 +63,15 @@ IO.prototype.delay = function(time) {
     }, time);
 }
 
-// IO.prototype.take = take; // should take only this many events
+IO.prototype.output = function() {
+	return this.__value();
+}
 
+IO.prototype.take = function() {
+	// lookup emap
+}
 IO.prototype.skip = function(num) {
-	// var f = this.__value;
+	// lookup emap
 
 }
 IO.prototype.chain = function(f) { 

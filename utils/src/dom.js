@@ -9,18 +9,24 @@ function select(selector) {
 	});
 }
 
+function selectOne(selector) {
+	return new IO(function() {
+		return document.querySelector(selector);
+	});
+}
+
 function style(selector, property, value) {
 	return new IO(function() {
 		return select(selector).map(function(e) {  e.style[property] = value; }).join();
 	});
 }
 
-	function addClass(cls, element) { // add map to elements and wrap in IO
-		return new IO(function() {
-			return each(function(e) { // can't be map :(
-				return e.className += " " + cls;
-			},element.__value());
-		})
+function addClass(cls, element) { // add map to elements and wrap in IO
+	return new IO(function() {
+		return each(function(e) { // can't be map :(
+			return e.className += " " + cls;
+		},element.__value());
+	})
 }	
 
 function removeClass(cls, ele) {

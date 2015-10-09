@@ -11,12 +11,6 @@ function findEvent(event) {
         throw new Error(this.constructor.name + ': Property "' + event +'" Not Found on the Object');
 }
 
-// function Events(target) {
-//     return new IO(function() {
-//         return target;
-//     });
-// }
-
 function listener(ev,node) {
     // or again return IO wrap, Remove 'f' dependency, include .__value dependency for a final call
     // would have to include next function that is basically eventListener(ev,node,f) -> IO
