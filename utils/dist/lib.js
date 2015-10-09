@@ -374,7 +374,7 @@ IO.prototype.delay = function(time) {
     }, time);
 }
 
-IO.prototype.out = function() {
+IO.prototype.output = function() {
 	return this.__value();
 }
 
