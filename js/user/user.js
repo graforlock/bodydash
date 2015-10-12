@@ -1,1 +1,0 @@
-// User check happens at all times
