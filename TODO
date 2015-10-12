@@ -1,0 +1,18 @@
+ 
+
+IMMEDIATE TASKS
+ ☐ Fully working event streams as in Baconjs, but ligther.
+ ☐ Implement working stream merges.
+ ☐ Improve delays on IO to avoid timeout clashes.
+ ☐ Maybe becomes Monoid (concatenate ability).
+ ☐ Maybe gets orElse function.
+ ☐ Port jQuery ajax into Http module
+ ☐ Refine observe(r)
+ ☐ Implement take and skip (extends DOM.js)
+ --- ✄ -----------------------
+LATER TASKS
+ ☐ Port to ES6 (Babel), with additional features
+ ☐ Remove jQuery Dependency (Create simple custom promise-based calls)
+ --- ✄ -----------------------
+
+
