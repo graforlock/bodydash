@@ -4,17 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "custom": "lib/custom.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Maciej Sitko",
+  "license": "MIT",
   "dependencies": {
     "gulp": "^3.9.0",
     "tape": "^4.2.1"
   },
   "devDependencies": {
-    "browserify": "^11.2.0",
     "buildify": "^0.4.0",
     "data.task": "^3.0.0",
     "gulp-concat": "^2.6.0",
