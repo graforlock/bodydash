@@ -1,3 +1,3 @@
 ### Description ###
 
-Functional Utility Library, applying Fantasy Land standards.
+Functional Utility Library.
