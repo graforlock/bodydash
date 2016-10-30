@@ -17,3 +17,5 @@ function lens(set, get)
     };
     return f;
 }
+
+module.exports = lens;

@@ -1,4 +1,5 @@
 //-->>> Maybe
+var curry = require('./utils').curry;
 
 function Maybe(x)
 {
@@ -40,3 +41,5 @@ var maybe = curry(function (x, f, m)
     return m.isNothing() ? x : f(m.__value);
     // Maybe helper for custom value (instead of 'null')
 });
+
+module.exports = Maybe;

@@ -1,4 +1,7 @@
 //-->>> I/O
+var utils = require('./utils'),
+    debug = require('./debug'),
+    array = require('./array');
 
 function IO(f)
 {
@@ -15,7 +18,7 @@ IO.of = function (x)
 
 IO.prototype.map = function (f)
 {
-    return new IO(compose(f, this.__value));
+    return new IO(utils.compose(f, this.__value));
 };
 
 IO.prototype.emap = function (f)
@@ -25,7 +28,7 @@ IO.prototype.emap = function (f)
      */
     return this.chain(function (e)
     {
-        return new IO(compose(e.__value, f));
+        return new IO(utils.compose(e.__value, f));
         // it will lose I/O; has to be some means to prevent it
     });
 };
@@ -51,7 +54,7 @@ IO.prototype.do = function (fun)
 
 IO.prototype.first = function ()
 {
-    return new IO(compose(head, this.__value));
+    return new IO(utils.compose(head, this.__value));
 };
 
 
@@ -76,11 +79,14 @@ IO.prototype.chain = function (f)
 };
 
 IO.prototype.each = function (f)
-{ // Impure function call, reserved for DOM
-    return new IO(each(f, this.__value()));
+{
+    return new IO(array.each(f, this.__value()));
 };
 
 IO.prototype.ap = function (other)
 {
     return other.map(this.__value()); // Function requirement
 };
+
+
+module.exports = IO;

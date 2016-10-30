@@ -1,51 +1,51 @@
 //-->>> Math add-ons
+var curry = require('./utils').curry;
 
-function add(x, y)
-{
-    return x + y;
-}
+var math = {
+    add: curry(function(x, y)
+    {
+        return x + y;
+    }),
 
-function subtract(x, y)
-{
-    return x - y;
-}
+    subtract: curry(function(x, y)
+    {
+        return x - y;
+    }),
 
-function times(x, y)
-{
-    return x * y;
-}
+    times: curry(function(x, y)
+    {
+        return x * y;
+    }),
 
-function divide(x, y)
-{
-    return x / y;
-}
+    divide: curry(function(x, y)
+    {
+        return x / y;
+    }),
 
-function square(x)
-{
-    return x * x;
-}
+    square: function(x)
+    {
+        return x * x;
+    },
 
-function cube(x)
-{
-    return square(x) * x;
-}
+    cube: function(x)
+    {
+        return square(x) * x;
+    },
 
-function plusplus(x)
-{ // Necessity: you can't pass ++ to the map
-    return ++x;
-}
+    plusplus: function(x)
+    { // Necessity: you can't pass ++ to the map
+        return ++x;
+    },
 
-function minusminus(x)
-{ // Necessity: you can't pass -- to the map
-    return --x;
-}
+    minusminus: function(x)
+    { // Necessity: you can't pass -- to the map
+        return --x;
+    },
 
-function rand(x)
-{
-    return Math.floor(Math.random() * x) + 1;
-}
+    rand: function(x)
+    {
+        return Math.floor(Math.random() * x) + 1;
+    }
+};
 
-var add = curry(add),
-    subtract = curry(subtract),
-    times = curry(times),
-    divide = curry(divide);
+module.exports = math;
