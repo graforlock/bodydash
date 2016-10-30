@@ -1,24 +1,29 @@
 //-->>> String add-ons
+var curry = require('./utils').curry,
+    head = require('./array').head;
 
-function toLower(a)
-{
-    return a.toLowerCase();
-}
-function toUpper(a)
-{
-    return a.toUpperCase();
-}
+var string = {
 
-function capitalise(a)
-{
-    return concat(toUpper(head(a)), a.slice(1));
-}
+    toLower: function(a)
+    {
+        return a.toLowerCase();
+    },
 
-var toLower = curry(toLower), toUpper = curry(toUpper);
+    toUpper: function(a)
+    {
+        return a.toUpperCase();
+    },
 
-function concat(a, b)
-{
-    return a.concat(b);
-}
+    capitalise: function(a)
+    {
+        return concat(string.toUpper(head(a)), a.slice(1));
+    },
 
-var concat = curry(concat);
+    concat: curry(function(a, b)
+    {
+        return a.concat(b);
+    })
+
+};
+
+module.exports = string;

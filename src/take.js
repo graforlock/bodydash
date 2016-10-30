@@ -1,21 +1,30 @@
 //-->>> Lazy add-ons
+var num = require('./contracts').num,
+    curry = require('./utils').curry;
 
-function take(n, xs)
-{
-    n = num(n);
-    return xs.filter(function (e, i)
+var lazy = {
+
+    take: function(n, xs)
     {
-        return i < n;
-    })
-}
+        n = num(n);
+        return xs.filter(function (e, i)
+        {
+            return i < n;
+        })
+    },
 
-function skip(n, xs)
-{
-    n = num(n);
-    return xs.filter(function (e, i)
+    skip: function(n, xs)
     {
-        return i > n
-    });
-}
+        n = num(n);
+        return xs.filter(function (e, i)
+        {
+            return i > n
+        });
+    }
 
-var take = curry(take), skip = curry(skip);
+};
+
+module.exports = lazy;
+
+
+

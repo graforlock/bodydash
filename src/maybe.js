@@ -32,10 +32,6 @@ Maybe.prototype.ap = function (other)
     // Functor requirement: It maps (other Functor's map) over current Functor's __value.
 };
 
-// TODO: Maybe.prototype.ap = function(vs) {
-//       return (typeof this.value !== 'function') ? new Maybe(null) : vs.map(this.value);
-//     };
-
 var maybe = curry(function (x, f, m)
 {
     return m.isNothing() ? x : f(m.__value);

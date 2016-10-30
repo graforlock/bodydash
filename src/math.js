@@ -2,6 +2,7 @@
 var curry = require('./utils').curry;
 
 var math = {
+
     add: curry(function(x, y)
     {
         return x + y;
@@ -46,6 +47,7 @@ var math = {
     {
         return Math.floor(Math.random() * x) + 1;
     }
+
 };
 
 module.exports = math;

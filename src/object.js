@@ -3,6 +3,7 @@ var contracts = require('./contracts'),
     utils = require('./utils');
 
 var object = {
+
     extend: function (destination, source)
     {
         for (var property in source)
@@ -19,14 +20,17 @@ var object = {
         }
         return destination;
     },
+
     extendData: function (target, data)
     {
         return object.extendObj(target, data);
     },
+
     extendObj: function (destination, source)
     {
         return object.extend(contracts.obj(destination), contracts.obj(source));
     },
+
     mergeObj: function (toExtend)
     {
         return contracts.objArr(toExtend)
@@ -39,35 +43,43 @@ var object = {
                 return object.extendObj(a, b)
             });
     },
+
     newObj: function ()
     {
         return object.extendObj({}, {});
     },
+
     immutable: function (o)
     {
         o = contracts.obj(o);
         return Object.freeze(o);
     },
+
     inProto: function (o, name)
     {
         return name in o && !o.hasOwnProperty(name);
     },
+
     hasOwn: function (o, name)
     {
         return !object.inProto(o, name);
     },
+
     prop: utils.curry(function (key, obj)
     {
         return obj[key];
     }),
+
     safeProp: utils.curry(function (x, o)
     {
         return new Maybe(o[x]);
     }),
+
     protoOf: function (o)
     {
         return Object.getPrototypeOf(o);
     }
+
 };
 
 

@@ -1,6 +1,7 @@
 //--->> Contracts
 
 var contracts = {
+
     str: function (s)
     {
         if (typeof s === 'string')
@@ -8,6 +9,7 @@ var contracts = {
         else
             throw new TypeError('Error: Input excepts String type');
     },
+
     classOf: function (s)
     {
         s = contracts.str(s);
@@ -19,6 +21,7 @@ var contracts = {
                 throw new TypeError('Error: Input excepts ' + s + ' type');
         }
     },
+
     typeOf: function (s)
     {
         s = contracts.str(s);
@@ -36,14 +39,17 @@ var contracts = {
         return utils.classOf('Object')(o);
 
     },
+
     arr: function (a)
     {
         return utils.classOf('Array')(a);
     },
+
     func: function (f)
     {
         return utils.typeOf('function')(f);
     },
+
     num: function (n)
     {
         return utils.typeOf('number')(n);
