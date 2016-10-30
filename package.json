@@ -9,16 +9,15 @@
   "author": "Maciej Sitko",
   "license": "MIT",
   "dependencies": {
-    "gulp": "^3.9.0",
     "tape": "^4.2.1"
   },
   "devDependencies": {
     "buildify": "^0.4.0",
     "data.task": "^3.0.0",
+    "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-notify": "^2.2.0",
     "gulp-plumber": "^1.0.1",
-    "gulp-uglify": "^1.4.1",
-    "jquery": "^2.1.4"
+    "gulp-uglify": "^1.4.1"
   }
 }
