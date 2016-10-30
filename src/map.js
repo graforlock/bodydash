@@ -1,4 +1,7 @@
-function map(f,xs) {
+//-->>> Map
+
+function map(f, xs)
+{
 
     return xs.map(f);
 }

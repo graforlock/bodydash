@@ -7,11 +7,11 @@ var folder = {};
 
 folder.src = {
 	path: 'src/'
-}
+};
 
 folder.dest = {
 	custom: 'custom/'
-}
+};
 
 var core = folder.src.path + 'utils.js';
 var paths = args.map(function(e) {

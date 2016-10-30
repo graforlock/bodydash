@@ -1,6 +1,7 @@
+//-->>> Reduce
 
-
-function reduce(f,xs) {
+function reduce(f, xs)
+{
     return xs.reduce(f);
 }
 

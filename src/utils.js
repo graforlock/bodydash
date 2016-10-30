@@ -1,15 +1,20 @@
 //-->>> General Tools
 
-function bind(fn, context) {
-    return function() {
+function bind(fn, context)
+{
+    return function ()
+    {
         return fn.apply(context, arguments);
     }
 }
-function compose() {
+function compose()
+{
     var funcs = arrayOf(func)([].slice.call(arguments));
-    return function() {
+    return function ()
+    {
         var fargs = arguments;
-        for (var i = funcs.length - 1; i >= 0; i -= 1) {
+        for (var i = funcs.length - 1; i >= 0; i -= 1)
+        {
             fargs = [funcs[i].apply(this, fargs)];
         }
         return fargs[0];
@@ -17,17 +22,21 @@ function compose() {
 }
 
 
-function mcompose(f,g) { // Monad/Functor compose
+function mcompose(f, g)
+{ // Monad/Functor compose
     return compose(chain(f), chain(g));
 }
 
-function curry(fn) {
+function curry(fn)
+{
     var arity = fn.length;
 
     return getArgs([]);
 
-    function getArgs(totalArgs) {
-        return function stepTwo() {
+    function getArgs(totalArgs)
+    {
+        return function stepTwo()
+        {
             var nextTotalArgs = totalArgs.concat([].slice.call(arguments, 0));
             if (nextTotalArgs.length >= arity)
                 return fn.apply(this, nextTotalArgs);
@@ -38,45 +47,57 @@ function curry(fn) {
     }
 }
 
-function flatten(array) {
-    return arr(array).reduce(function(a, b) {
+function flatten(array)
+{
+    return arr(array).reduce(function (a, b)
+    {
         return a.concat(b);
     });
 
 }
 
-function flip(fn) {
-    return function(first) {
-        return function(second) {
+function flip(fn)
+{
+    return function (first)
+    {
+        return function (second)
+        {
             return fn.call(this, second, first);
         };
     };
-};
+}
 
-function flipMany(fn) {
-    return function() {
+function flipMany(fn)
+{
+    return function ()
+    {
         var first = toArray(arguments);
-        return function() {
+        return function ()
+        {
             var second = toArray(arguments);
             return fn.apply(this, concat(second, first));
         };
     };
-};
+}
 
-function join(monad) {
+function join(monad)
+{
     return monad.join();
 }
 
-function chain(f,m) {
+function chain(f, m)
+{
     return m.map(f).join();
 }
 
 var chain = curry(chain);
 
-function variadic(fn) {
+function variadic(fn)
+{
     if (fn.length < 1) return fn;
 
-    return function() {
+    return function ()
+    {
         var ordinaryArgs = (1 <= arguments.length ?
                 slice.call(arguments, 0, fn.length - 1) : []),
             restOfTheArgsList = slice.call(arguments, fn.length - 1),
@@ -85,20 +106,23 @@ function variadic(fn) {
 
         return fn.apply(this, args);
     }
-};
+}
 
 //--->> Contracts
 
-function str(s) {
+function str(s)
+{
     if (typeof s === 'string')
         return s;
     else
         throw new TypeError('Error: Input excepts String type');
 }
 
-function classOf(s) {
+function classOf(s)
+{
     s = str(s);
-    return function(a) {
+    return function (a)
+    {
         if ({}.toString.call(a) === '[object ' + s + ']')
             return a;
         else
@@ -106,9 +130,11 @@ function classOf(s) {
     }
 }
 
-function typeOf(s) {
+function typeOf(s)
+{
     s = str(s);
-    return function(v) {
+    return function (v)
+    {
         if (typeof v === s)
             return v;
         else
@@ -116,111 +142,137 @@ function typeOf(s) {
     }
 }
 
-function obj(o) {
+function obj(o)
+{
     return classOf('Object')(o);
 
 }
 
-function arr(a) {
+function arr(a)
+{
     return classOf('Array')(a);
 }
 
-function func(f) {
+function func(f)
+{
     return typeOf('function')(f);
 }
 
-function num(n) {
+function num(n)
+{
     return typeOf('number')(n);
 }
 
-function id(x) {
+function id(x)
+{
     return x;
 }
 
-function isArr(a) {
+function isArr(a)
+{
     if ({}.toString.call(a) === '[object Array]')
         return a;
     else
         return false;
 }
 
-function arrayOf(c) {
-    return function(a) {
+function arrayOf(c)
+{
+    return function (a)
+    {
         return arr(a).map(c);
     }
 }
 
-function funcArr(a) {
+function funcArr(a)
+{
     return arrayOf(func)(a);
 }
 
-function numArr(a) {
+function numArr(a)
+{
     return arrayOf(num)(a);
 }
 
-function strArr(a) {
+function strArr(a)
+{
     return arrayOf(str)(a);
 }
 
-function objArr(a) {
+function objArr(a)
+{
     return arrayOf(obj)(a);
 }
 
-function arrArr(a) {
+function arrArr(a)
+{
     return arrayOf(arr)(a);
 }
 
-function toArray(array) {
+function toArray(array)
+{
     return [array];
 }
 
-function safeArray(array) {
+function safeArray(array)
+{
     return new Maybe([].slice.call(array));
 }
 
 //--->>> Object utils
 
-function immutable(o) {
+function immutable(o)
+{
     o = obj(o);
     return Object.freeze(o);
 }
 
-function inProto(o, name) {
+function inProto(o, name)
+{
     return name in object && !o.hasOwnProperty(name);
 }
 
-function hasOwn(o, name) {
+function hasOwn(o, name)
+{
     return !inProto(o, name);
 }
 
-function prop(key,obj) {
+function prop(key, obj)
+{
     return obj[key];
 }
 
-function protoOf(o) {
+function protoOf(o)
+{
     return Object.getPrototypeOf(o);
 }
 
 var prop = curry(prop),
-    safeProp = curry(function(x,o) { return new Maybe(o[x]);}),
+    safeProp = curry(function (x, o)
+    {
+        return new Maybe(o[x]);
+    }),
     safeHead = safeProp(0);
-
 
 
 //--->>> Arrays
 
-function head(xs) {
+function head(xs)
+{
     return xs[0];
 }
 
-function last(xs) {
-    return xs[xs.length-1];
+function last(xs)
+{
+    return xs[xs.length - 1];
 }
 
-function each(cb, array) { // nodeLists
-  for (var i = 0; i < array.length; i++) {
-         cb.call(null,array[i]); 
-  }
-};
+function each(cb, array)
+{ // nodeLists
+    for (var i = 0; i < array.length; i++)
+    {
+        cb.call(null, array[i]);
+    }
+}
 
 var slice = Array.prototype.slice, each = curry(each);

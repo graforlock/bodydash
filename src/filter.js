@@ -1,5 +1,7 @@
+//-->>> Filter
 
-function filter(f,xs) {
+function filter(f, xs)
+{
     return xs.filter(f);
 }
 

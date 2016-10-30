@@ -1,3 +1,4 @@
+//-->>> Container
 
 function Container(x) {
     this.__value = x;
@@ -5,8 +6,8 @@ function Container(x) {
 
 Container.of = function(x) {
     return new Container(x);
-}
+};
 
 Container.prototype.map = function(f) {
     return Container.of(f(this.__value));
-}
+};

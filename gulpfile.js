@@ -12,7 +12,7 @@ files.js = {
 	dist: 'dist/',
 	src: 'src/*.js'
 
-}
+};
 
 files.notify = {
     js: {
@@ -20,7 +20,7 @@ files.notify = {
         'Error:\n<%= error.message %>')
     }
 
-}
+};
 
 gulp.task('js-min', ['js'],function() {
   return gulp.src(files.js.src)

@@ -1,35 +1,47 @@
-function extend(destination, source) {
+//-->>> Extend
 
-    for (var property in source) {
+function extend(destination, source)
+{
+
+    for (var property in source)
+    {
         if (source[property] && source[property].constructor &&
-            source[property].constructor === Object) {
+            source[property].constructor === Object)
+        {
             destination[property] = destination[property] || {};
             extend(destination[property], source[property]);
-        } else {
+        } else
+        {
             destination[property] = source[property];
         }
     }
     return destination;
 };
 
-function extendData(target, data) {
+function extendData(target, data)
+{
     return extendObj(target, data);
 }
 
-function extendObj(destination, source) {
+function extendObj(destination, source)
+{
     return extend(obj(destination), obj(source));
 }
 
-function mergeObj(toExtend) { // A.K.A. Extend Many
+function mergeObj(toExtend)
+{ // A.K.A. Extend Many
     return objArr(toExtend)
-        .map(function(e) {
+        .map(function (e)
+        {
             return extendObj({}, e)
         })
-        .reduce(function(a, b) {
+        .reduce(function (a, b)
+        {
             return extendObj(a, b)
         });
 }
 
-function newObj() {
+function newObj()
+{
     return extendObj({}, {});
 }
