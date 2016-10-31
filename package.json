@@ -13,9 +13,8 @@
     "tape": "^4.2.1"
   },
   "devDependencies": {
-    "rimraf": "^2.5.3",
+    "rimraf": "^2.5.4",
     "uglify-js": "^2.7.0",
-    "webpack": "^1.13.1",
-    "yargs": "^4.8.1"
+    "webpack": "^1.13.1"
   }
 }
