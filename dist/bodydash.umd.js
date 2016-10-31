@@ -56,15 +56,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 	    array: __webpack_require__(1),
-	    container: __webpack_require__(6),
+	    container: __webpack_require__(7),
 	    contracts: __webpack_require__(4),
-	    debug: __webpack_require__(7),
-	    either: __webpack_require__(8),
-	    io: __webpack_require__(9),
-	    lens: __webpack_require__(10),
-	    lift: __webpack_require__(11),
-	    math: __webpack_require__(12),
-	    maybe: __webpack_require__(13),
+	    debug: __webpack_require__(8),
+	    either: __webpack_require__(9),
+	    io: __webpack_require__(10),
+	    lens: __webpack_require__(11),
+	    lift: __webpack_require__(12),
+	    math: __webpack_require__(13),
+	    maybe: __webpack_require__(6),
 	    object: __webpack_require__(5),
 	    string: __webpack_require__(14),
 	    take: __webpack_require__(15),
@@ -372,7 +372,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/* WEBPACK VAR INJECTION */(function(module) {//--->>> Object utils
 	var contracts = __webpack_require__(4),
-	    utils = __webpack_require__(3);
+	    curry = __webpack_require__(3).curry,
+	    Maybe = __webpack_require__(6);
 	
 	var object = {
 	
@@ -437,12 +438,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return !object.inProto(o, name);
 	    },
 	
-	    prop: utils.curry(function (key, obj)
+	    prop: curry(function (key, obj)
 	    {
 	        return obj[key];
 	    }),
 	
-	    safeProp: utils.curry(function (x, o)
+	    safeProp: curry(function (x, o)
 	    {
 	        return new Maybe(o[x]);
 	    }),
@@ -460,6 +461,53 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	//-->>> Maybe
+	var curry = __webpack_require__(3).curry;
+	
+	function Maybe(x)
+	{
+	    this.__value = x;
+	}
+	
+	Maybe.maybe = curry(function (x, f, m)
+	{
+	    return m.isNothing() ? x : f(m.__value);
+	    // Maybe helper for custom value (instead of 'null')
+	});
+	
+	Maybe.of = function (x)
+	{
+	    return new Maybe(x);
+	};
+	
+	Maybe.prototype.isNothing = function ()
+	{
+	    return (this.__value === null || this.__value === undefined || this.__value !== this.__value);
+	};
+	
+	Maybe.prototype.map = function (f)
+	{
+	    return this.isNothing() ? Maybe.of(null) : Maybe.of(f(this.__value));
+	};
+	
+	Maybe.prototype.join = function ()
+	{
+	    return this.isNothing() ? Maybe.of(null) : this.__value;
+	};
+	
+	Maybe.prototype.ap = function (other)
+	{
+	    return other.map(this.__value);
+	    // Functor requirement: It maps (other Functor's map) over current Functor's __value.
+	};
+	
+	
+	module.exports = Maybe;
+
+/***/ },
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {//-->>> Container
@@ -481,7 +529,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)(module)))
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Debug
@@ -495,7 +543,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = utils.curry(debug);
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//--->> Either
@@ -533,12 +581,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> I/O
 	var utils = __webpack_require__(3),
-	    debug = __webpack_require__(7),
+	    debug = __webpack_require__(8),
 	    array = __webpack_require__(1);
 	
 	function IO(f)
@@ -630,7 +678,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = IO;
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	//-->>> Lenses
@@ -656,7 +704,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = lens;
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Lift
@@ -684,7 +732,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = lift;
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Math add-ons
@@ -741,53 +789,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	module.exports = math;
 
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	//-->>> Maybe
-	var curry = __webpack_require__(3).curry;
-	
-	function Maybe(x)
-	{
-	    this.__value = x;
-	}
-	
-	Maybe.maybe = curry(function (x, f, m)
-	{
-	    return m.isNothing() ? x : f(m.__value);
-	    // Maybe helper for custom value (instead of 'null')
-	});
-	
-	Maybe.of = function (x)
-	{
-	    return new Maybe(x);
-	};
-	
-	Maybe.prototype.isNothing = function ()
-	{
-	    return (this.__value === null || this.__value === undefined || this.__value !== this.__value);
-	};
-	
-	Maybe.prototype.map = function (f)
-	{
-	    return this.isNothing() ? Maybe.of(null) : Maybe.of(f(this.__value));
-	};
-	
-	Maybe.prototype.join = function ()
-	{
-	    return this.isNothing() ? Maybe.of(null) : this.__value;
-	};
-	
-	Maybe.prototype.ap = function (other)
-	{
-	    return other.map(this.__value);
-	    // Functor requirement: It maps (other Functor's map) over current Functor's __value.
-	};
-	
-	
-	module.exports = Maybe;
 
 /***/ },
 /* 14 */

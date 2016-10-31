@@ -1,6 +1,7 @@
 //--->>> Object utils
 var contracts = require('./contracts'),
-    utils = require('./utils');
+    curry = require('./utils').curry,
+    Maybe = require('./maybe');
 
 var object = {
 
@@ -65,12 +66,12 @@ var object = {
         return !object.inProto(o, name);
     },
 
-    prop: utils.curry(function (key, obj)
+    prop: curry(function (key, obj)
     {
         return obj[key];
     }),
 
-    safeProp: utils.curry(function (x, o)
+    safeProp: curry(function (x, o)
     {
         return new Maybe(o[x]);
     }),
