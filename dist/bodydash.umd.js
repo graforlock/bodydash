@@ -822,7 +822,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	//-->>> Lazy add-ons
 	var num = __webpack_require__(4).num,
-	    curry = __webpack_require__(10).curry;
+	    curry = __webpack_require__(2);
 	
 	var lazy = {
 	
