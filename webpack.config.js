@@ -2,36 +2,38 @@ var webpack = require('webpack');
 var path = require('path');
 var UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 
-var libraryName = 'bodydash';
-var sourceDir = './src';
-var distDir = './dist';
-var sourceEntryPoint = './src/index.js';
 
-var plugins = [];
+var config = {
+    name : 'bodydash',
+    src : './src',
+    dist : './dist',
+    mainEntry : './src/index.js',
+    plugins : []
+};
+
 var out;
 
-
 if (process.argv.indexOf('--prod') != -1 ) {
-    plugins.push(new UglifyJsPlugin({ minimize: true }));
-    out = libraryName.toLowerCase() + '.umd.min.js';
+    config.plugins.push(new UglifyJsPlugin({ minimize: true }));
+    out = config.name.toLowerCase() + '.umd.min.js';
 } else {
-    out = libraryName.toLowerCase() + '.umd.js';
+    out = config.name.toLowerCase() + '.umd.js';
 }
 
 
 module.exports = {
 
-    entry: sourceEntryPoint,
+    entry: config.mainEntry,
 
     devtool: 'source-map',
 
     output: {
 
-        path: path.resolve(distDir),
+        path: path.resolve(config.dist),
 
         filename: out,
 
-        library: libraryName,
+        library: config.name,
 
         libraryTarget: 'umd',
 
@@ -41,12 +43,10 @@ module.exports = {
 
     resolve: {
 
-        root: path.resolve(sourceDir),
+        root: path.resolve(config.src),
 
         extensions: ['', '.js']
 
     },
-
-    plugins: plugins
-
+    plugins: config.plugins
 };
