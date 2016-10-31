@@ -6,6 +6,12 @@ function Maybe(x)
     this.__value = x;
 }
 
+Maybe.maybe = curry(function (x, f, m)
+{
+    return m.isNothing() ? x : f(m.__value);
+    // Maybe helper for custom value (instead of 'null')
+});
+
 Maybe.of = function (x)
 {
     return new Maybe(x);
@@ -32,10 +38,5 @@ Maybe.prototype.ap = function (other)
     // Functor requirement: It maps (other Functor's map) over current Functor's __value.
 };
 
-var maybe = curry(function (x, f, m)
-{
-    return m.isNothing() ? x : f(m.__value);
-    // Maybe helper for custom value (instead of 'null')
-});
 
 module.exports = Maybe;

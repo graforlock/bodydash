@@ -4,23 +4,23 @@ var num = require('./contracts').num,
 
 var lazy = {
 
-    take: function(n, xs)
+    take: curry(function(n, xs)
     {
         n = num(n);
         return xs.filter(function (e, i)
         {
             return i < n;
         })
-    },
+    }),
 
-    skip: function(n, xs)
+    skip: curry(function(n, xs)
     {
         n = num(n);
         return xs.filter(function (e, i)
         {
             return i > n
         });
-    }
+    })
 
 };
 
