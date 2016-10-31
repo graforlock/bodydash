@@ -1,6 +1,6 @@
 //-->>> Lazy add-ons
 var num = require('./contracts').num,
-    curry = require('./utils').curry;
+    curry = require('./curry');
 
 var lazy = {
 
