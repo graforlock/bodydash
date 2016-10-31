@@ -77,10 +77,10 @@ var core = {
     {
         return monad.join();
     },
-    chain: this.curry(function (f, m)
+    chain: function (f, m)
     {
         return m.map(f).join();
-    }),
+    },
     variadic: function (fn)
     {
         if (fn.length < 1) return fn;
