@@ -1,5 +1,5 @@
 //-->>> String add-ons
-var curry = require('./utils').curry,
+var curry = require('./curry'),
     head = require('./array').head;
 
 var string = {
@@ -16,7 +16,7 @@ var string = {
 
     capitalise: function(a)
     {
-        return concat(string.toUpper(head(a)), a.slice(1));
+        return string.concat(string.toUpper(head(a)), a.slice(1));
     },
 
     concat: curry(function(a, b)

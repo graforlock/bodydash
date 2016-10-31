@@ -1,6 +1,6 @@
 //--->>> Arrays
-var curry = require('./utils').curry,
-    object = require('./object');
+var curry = require('./curry'),
+    safeProp = require('./object').safeProp;
 
 var array = {
 
@@ -19,12 +19,13 @@ var array = {
     {
         return xs.reduce(f);
     },
+
     head: function (xs)
     {
         return xs[0];
     },
 
-    safeHead: object.safeProp(0),
+    safeHead: safeProp(0),
 
     last: function (xs)
     {
@@ -43,4 +44,4 @@ var array = {
 
 };
 
-module.export = array;
+module.exports = array;

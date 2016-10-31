@@ -1,5 +1,5 @@
 //-->>> Lift
-var curry = require('./utils').curry;
+var curry = require('./curry');
 
 var lift = {
 

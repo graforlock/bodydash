@@ -1,6 +1,6 @@
 //--->>> Object utils
 var contracts = require('./contracts'),
-    curry = require('./utils').curry,
+    curry = require('./curry'),
     Maybe = require('./maybe');
 
 var object = {
@@ -84,4 +84,4 @@ var object = {
 };
 
 
-module.export = object;
+module.exports = object;

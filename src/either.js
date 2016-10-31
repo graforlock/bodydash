@@ -1,5 +1,5 @@
 //--->> Either
-var utils = require('./utils');
+var curry = require('./curry');
 
 function Left(x) {
     this.__value = x;
@@ -25,7 +25,7 @@ Right.prototype.map = function(f) {
     return Right.of(f(this.__value));
 };
 
-module.exports = utils.curry(function(f /* identity in mose cases */, g, e) {
+module.exports = curry(function(f /* identity in mose cases */, g, e) {
      switch (e.constructor) { 
         case Left: return f(e.__value); 
         case Right: return g(e.__value); 

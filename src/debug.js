@@ -1,9 +1,9 @@
 //-->>> Debug
-var utils = require('./utils');
+var curry = require('./curry');
 
 function debug(tag,x) {
         console.log(tag, x);
         return x;
 }
 
-module.exports = utils.curry(debug);
+module.exports = curry(debug);

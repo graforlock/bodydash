@@ -1,5 +1,7 @@
 //-->>> General Tools
-var contracts = require('./contracts');
+var contracts = require('./contracts'),
+    Maybe = require('./maybe'),
+    curry = require('./curry');
 
 var core = {
     bind: function (fn, context)
@@ -25,23 +27,6 @@ var core = {
     mcompose: function (f, g)
     {
         return core.compose(core.chain(f), core.chain(g));
-    },
-    curry: function (fn)
-    {
-        var arity = fn.length;
-        return getArgs([]);
-
-        function getArgs(totalArgs)
-        {
-            return function stepTwo()
-            {
-                var nextTotalArgs = totalArgs.concat([].slice.call(arguments, 0));
-                if (nextTotalArgs.length >= arity)
-                    return fn.apply(this, nextTotalArgs);
-                else
-                    return getArgs(nextTotalArgs);
-            }
-        }
     },
     flatten: function (array)
     {
@@ -77,10 +62,10 @@ var core = {
     {
         return monad.join();
     },
-    chain: function (f, m)
+    chain: curry(function (f, m)
     {
         return m.map(f).join();
-    },
+    }),
     variadic: function (fn)
     {
         if (fn.length < 1) return fn;

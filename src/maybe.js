@@ -1,5 +1,5 @@
 //-->>> Maybe
-var curry = require('./utils').curry;
+var curry = require('./curry');
 
 function Maybe(x)
 {

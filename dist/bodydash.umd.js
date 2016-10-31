@@ -56,28 +56,28 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 	    array: __webpack_require__(1),
-	    container: __webpack_require__(7),
+	    container: __webpack_require__(6),
 	    contracts: __webpack_require__(4),
-	    debug: __webpack_require__(8),
-	    either: __webpack_require__(9),
-	    io: __webpack_require__(10),
+	    debug: __webpack_require__(7),
+	    either: __webpack_require__(8),
+	    io: __webpack_require__(9),
 	    lens: __webpack_require__(11),
 	    lift: __webpack_require__(12),
 	    math: __webpack_require__(13),
-	    maybe: __webpack_require__(6),
-	    object: __webpack_require__(5),
+	    maybe: __webpack_require__(5),
+	    object: __webpack_require__(3),
 	    string: __webpack_require__(14),
 	    take: __webpack_require__(15),
-	    utils: __webpack_require__(3)
+	    utils: __webpack_require__(10)
 	};
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(module) {//--->>> Arrays
-	var curry = __webpack_require__(3).curry,
-	    object = __webpack_require__(5);
+	//--->>> Arrays
+	var curry = __webpack_require__(2),
+	    safeProp = __webpack_require__(3).safeProp;
 	
 	var array = {
 	
@@ -96,12 +96,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    {
 	        return xs.reduce(f);
 	    },
+	
 	    head: function (xs)
 	    {
 	        return xs[0];
 	    },
 	
-	    safeHead: object.safeProp(0),
+	    safeHead: safeProp(0),
 	
 	    last: function (xs)
 	    {
@@ -120,141 +121,124 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	};
 	
-	module.export = array;
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)(module)))
+	module.exports = array;
+
 
 /***/ },
 /* 2 */
 /***/ function(module, exports) {
 
-	module.exports = function(module) {
-		if(!module.webpackPolyfill) {
-			module.deprecate = function() {};
-			module.paths = [];
-			// module.parent = undefined by default
-			module.children = [];
-			module.webpackPolyfill = 1;
-		}
-		return module;
+	function curry(fn)
+	{
+	    var arity = fn.length;
+	    return getArgs([]);
+	
+	    function getArgs(totalArgs)
+	    {
+	        return function stepTwo()
+	        {
+	            var nextTotalArgs = totalArgs.concat([].slice.call(arguments, 0));
+	            if (nextTotalArgs.length >= arity)
+	                return fn.apply(this, nextTotalArgs);
+	            else
+	                return getArgs(nextTotalArgs);
+	        }
+	    }
 	}
-
+	
+	module.exports = curry;
 
 /***/ },
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//-->>> General Tools
-	var contracts = __webpack_require__(4);
+	//--->>> Object utils
+	var contracts = __webpack_require__(4),
+	    curry = __webpack_require__(2),
+	    Maybe = __webpack_require__(5);
 	
-	var core = {
-	    bind: function (fn, context)
-	    {
-	        return function ()
-	        {
-	            return fn.apply(context, arguments);
-	        }
-	    },
-	    compose: function ()
-	    {
-	        var funcs = core.arrayOf(core.func)([].slice.call(arguments));
-	        return function ()
-	        {
-	            var fargs = arguments;
-	            for (var i = funcs.length - 1; i >= 0; i -= 1)
-	            {
-	                fargs = [funcs[i].apply(this, fargs)];
-	            }
-	            return fargs[0];
-	        }
-	    },
-	    mcompose: function (f, g)
-	    {
-	        return core.compose(core.chain(f), core.chain(g));
-	    },
-	    curry: function (fn)
-	    {
-	        var arity = fn.length;
-	        return getArgs([]);
+	var object = {
 	
-	        function getArgs(totalArgs)
+	    extend: function (destination, source)
+	    {
+	        for (var property in source)
 	        {
-	            return function stepTwo()
+	            if (source[property] && source[property].constructor &&
+	                source[property].constructor === Object)
 	            {
-	                var nextTotalArgs = totalArgs.concat([].slice.call(arguments, 0));
-	                if (nextTotalArgs.length >= arity)
-	                    return fn.apply(this, nextTotalArgs);
-	                else
-	                    return getArgs(nextTotalArgs);
+	                destination[property] = destination[property] || {};
+	                extend(destination[property], source[property]);
+	            } else
+	            {
+	                destination[property] = source[property];
 	            }
 	        }
-	    },
-	    flatten: function (array)
-	    {
-	        return contracts.arr(array).reduce(function (a, b)
-	        {
-	            return a.concat(b);
-	        });
+	        return destination;
 	    },
 	
-	    flip: function (fn)
+	    extendData: function (target, data)
 	    {
-	        return function (first)
-	        {
-	            return function (second)
+	        return object.extendObj(target, data);
+	    },
+	
+	    extendObj: function (destination, source)
+	    {
+	        return object.extend(contracts.obj(destination), contracts.obj(source));
+	    },
+	
+	    mergeObj: function (toExtend)
+	    {
+	        return contracts.objArr(toExtend)
+	            .map(function (e)
 	            {
-	                return fn.call(this, second, first);
-	            };
-	        };
-	    },
-	    flipMany: function (fn)
-	    {
-	        return function ()
-	        {
-	            var first = core.toArray(arguments);
-	            return function ()
+	                return object.extendObj({}, e)
+	            })
+	            .reduce(function (a, b)
 	            {
-	                var second = core.toArray(arguments);
-	                return fn.apply(this, concat(second, first));
-	            };
-	        };
+	                return object.extendObj(a, b)
+	            });
 	    },
-	    join: function (monad)
-	    {
-	        return monad.join();
-	    },
-	    chain: function (f, m)
-	    {
-	        return m.map(f).join();
-	    },
-	    variadic: function (fn)
-	    {
-	        if (fn.length < 1) return fn;
 	
-	        return function ()
-	        {
-	            var ordinaryArgs = (1 <= arguments.length ?
-	                    core.slice.call(arguments, 0, fn.length - 1) : []),
-	                restOfTheArgsList = slice.call(arguments, fn.length - 1),
-	                args = (fn.length <= arguments.length ?
-	                    ordinaryArgs.concat([restOfTheArgsList]) : []);
+	    newObj: function ()
+	    {
+	        return object.extendObj({}, {});
+	    },
 	
-	            return fn.apply(this, args);
-	        }
-	    },
-	    toArray: function (array)
+	    immutable: function (o)
 	    {
-	        return [array];
+	        o = contracts.obj(o);
+	        return Object.freeze(o);
 	    },
-	    safeArray: function (array)
+	
+	    inProto: function (o, name)
 	    {
-	        return new Maybe([].slice.call(array));
+	        return name in o && !o.hasOwnProperty(name);
+	    },
+	
+	    hasOwn: function (o, name)
+	    {
+	        return !object.inProto(o, name);
+	    },
+	
+	    prop: curry(function (key, obj)
+	    {
+	        return obj[key];
+	    }),
+	
+	    safeProp: curry(function (x, o)
+	    {
+	        return new Maybe(o[x]);
+	    }),
+	
+	    protoOf: function (o)
+	    {
+	        return Object.getPrototypeOf(o);
 	    }
+	
 	};
 	
-	module.exports = core;
 	
-
+	module.exports = object;
 
 /***/ },
 /* 4 */
@@ -370,101 +354,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(module) {//--->>> Object utils
-	var contracts = __webpack_require__(4),
-	    curry = __webpack_require__(3).curry,
-	    Maybe = __webpack_require__(6);
-	
-	var object = {
-	
-	    extend: function (destination, source)
-	    {
-	        for (var property in source)
-	        {
-	            if (source[property] && source[property].constructor &&
-	                source[property].constructor === Object)
-	            {
-	                destination[property] = destination[property] || {};
-	                extend(destination[property], source[property]);
-	            } else
-	            {
-	                destination[property] = source[property];
-	            }
-	        }
-	        return destination;
-	    },
-	
-	    extendData: function (target, data)
-	    {
-	        return object.extendObj(target, data);
-	    },
-	
-	    extendObj: function (destination, source)
-	    {
-	        return object.extend(contracts.obj(destination), contracts.obj(source));
-	    },
-	
-	    mergeObj: function (toExtend)
-	    {
-	        return contracts.objArr(toExtend)
-	            .map(function (e)
-	            {
-	                return object.extendObj({}, e)
-	            })
-	            .reduce(function (a, b)
-	            {
-	                return object.extendObj(a, b)
-	            });
-	    },
-	
-	    newObj: function ()
-	    {
-	        return object.extendObj({}, {});
-	    },
-	
-	    immutable: function (o)
-	    {
-	        o = contracts.obj(o);
-	        return Object.freeze(o);
-	    },
-	
-	    inProto: function (o, name)
-	    {
-	        return name in o && !o.hasOwnProperty(name);
-	    },
-	
-	    hasOwn: function (o, name)
-	    {
-	        return !object.inProto(o, name);
-	    },
-	
-	    prop: curry(function (key, obj)
-	    {
-	        return obj[key];
-	    }),
-	
-	    safeProp: curry(function (x, o)
-	    {
-	        return new Maybe(o[x]);
-	    }),
-	
-	    protoOf: function (o)
-	    {
-	        return Object.getPrototypeOf(o);
-	    }
-	
-	};
-	
-	
-	module.export = object;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)(module)))
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
 	//-->>> Maybe
-	var curry = __webpack_require__(3).curry;
+	var curry = __webpack_require__(2);
 	
 	function Maybe(x)
 	{
@@ -507,10 +398,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Maybe;
 
 /***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
+/* 6 */
+/***/ function(module, exports) {
 
-	/* WEBPACK VAR INJECTION */(function(module) {//-->>> Container
+	//-->>> Container
 	
 	function Container(x) {
 	    this.__value = x;
@@ -524,30 +415,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return Container.of(f(this.__value));
 	};
 	
-	module.export = Container;
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)(module)))
+	module.exports = Container;
+
 
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Debug
-	var utils = __webpack_require__(3);
+	var curry = __webpack_require__(2);
 	
 	function debug(tag,x) {
 	        console.log(tag, x);
 	        return x;
 	}
 	
-	module.exports = utils.curry(debug);
+	module.exports = curry(debug);
 
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//--->> Either
-	var utils = __webpack_require__(3);
+	var curry = __webpack_require__(2);
 	
 	function Left(x) {
 	    this.__value = x;
@@ -573,7 +463,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return Right.of(f(this.__value));
 	};
 	
-	module.exports = utils.curry(function(f /* identity in mose cases */, g, e) {
+	module.exports = curry(function(f /* identity in mose cases */, g, e) {
 	     switch (e.constructor) { 
 	        case Left: return f(e.__value); 
 	        case Right: return g(e.__value); 
@@ -581,12 +471,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> I/O
-	var utils = __webpack_require__(3),
-	    debug = __webpack_require__(8),
+	var utils = __webpack_require__(10),
+	    debug = __webpack_require__(7),
 	    array = __webpack_require__(1);
 	
 	function IO(f)
@@ -678,6 +568,107 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = IO;
 
 /***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	//-->>> General Tools
+	var contracts = __webpack_require__(4),
+	    Maybe = __webpack_require__(5),
+	    curry = __webpack_require__(2);
+	
+	var core = {
+	    bind: function (fn, context)
+	    {
+	        return function ()
+	        {
+	            return fn.apply(context, arguments);
+	        }
+	    },
+	    compose: function ()
+	    {
+	        var funcs = core.arrayOf(core.func)([].slice.call(arguments));
+	        return function ()
+	        {
+	            var fargs = arguments;
+	            for (var i = funcs.length - 1; i >= 0; i -= 1)
+	            {
+	                fargs = [funcs[i].apply(this, fargs)];
+	            }
+	            return fargs[0];
+	        }
+	    },
+	    mcompose: function (f, g)
+	    {
+	        return core.compose(core.chain(f), core.chain(g));
+	    },
+	    flatten: function (array)
+	    {
+	        return contracts.arr(array).reduce(function (a, b)
+	        {
+	            return a.concat(b);
+	        });
+	    },
+	
+	    flip: function (fn)
+	    {
+	        return function (first)
+	        {
+	            return function (second)
+	            {
+	                return fn.call(this, second, first);
+	            };
+	        };
+	    },
+	    flipMany: function (fn)
+	    {
+	        return function ()
+	        {
+	            var first = core.toArray(arguments);
+	            return function ()
+	            {
+	                var second = core.toArray(arguments);
+	                return fn.apply(this, concat(second, first));
+	            };
+	        };
+	    },
+	    join: function (monad)
+	    {
+	        return monad.join();
+	    },
+	    chain: curry(function (f, m)
+	    {
+	        return m.map(f).join();
+	    }),
+	    variadic: function (fn)
+	    {
+	        if (fn.length < 1) return fn;
+	
+	        return function ()
+	        {
+	            var ordinaryArgs = (1 <= arguments.length ?
+	                    core.slice.call(arguments, 0, fn.length - 1) : []),
+	                restOfTheArgsList = slice.call(arguments, fn.length - 1),
+	                args = (fn.length <= arguments.length ?
+	                    ordinaryArgs.concat([restOfTheArgsList]) : []);
+	
+	            return fn.apply(this, args);
+	        }
+	    },
+	    toArray: function (array)
+	    {
+	        return [array];
+	    },
+	    safeArray: function (array)
+	    {
+	        return new Maybe([].slice.call(array));
+	    }
+	};
+	
+	module.exports = core;
+	
+
+
+/***/ },
 /* 11 */
 /***/ function(module, exports) {
 
@@ -708,7 +699,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Lift
-	var curry = __webpack_require__(3).curry;
+	var curry = __webpack_require__(2);
 	
 	var lift = {
 	
@@ -736,7 +727,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Math add-ons
-	var curry = __webpack_require__(3).curry;
+	var curry = __webpack_require__(2);
 	
 	var math = {
 	
@@ -795,7 +786,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> String add-ons
-	var curry = __webpack_require__(3).curry,
+	var curry = __webpack_require__(2),
 	    head = __webpack_require__(1).head;
 	
 	var string = {
@@ -812,7 +803,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    capitalise: function(a)
 	    {
-	        return concat(string.toUpper(head(a)), a.slice(1));
+	        return string.concat(string.toUpper(head(a)), a.slice(1));
 	    },
 	
 	    concat: curry(function(a, b)
@@ -831,7 +822,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	//-->>> Lazy add-ons
 	var num = __webpack_require__(4).num,
-	    curry = __webpack_require__(3).curry;
+	    curry = __webpack_require__(10).curry;
 	
 	var lazy = {
 	
