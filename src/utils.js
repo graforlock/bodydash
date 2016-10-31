@@ -11,7 +11,7 @@ var core = {
     },
     compose: function ()
     {
-        var funcs = utils.arrayOf(utils.func)([].slice.call(arguments));
+        var funcs = core.arrayOf(core.func)([].slice.call(arguments));
         return function ()
         {
             var fargs = arguments;
@@ -24,7 +24,7 @@ var core = {
     },
     mcompose: function (f, g)
     {
-        return utils.compose(utils.chain(f), utils.chain(g));
+        return core.compose(core.chain(f), core.chain(g));
     },
     curry: function (fn)
     {
@@ -65,10 +65,10 @@ var core = {
     {
         return function ()
         {
-            var first = utils.toArray(arguments);
+            var first = core.toArray(arguments);
             return function ()
             {
-                var second = utils.toArray(arguments);
+                var second = core.toArray(arguments);
                 return fn.apply(this, concat(second, first));
             };
         };
@@ -77,7 +77,7 @@ var core = {
     {
         return monad.join();
     },
-    chain: utils.curry(function (f, m)
+    chain: core.curry(function (f, m)
     {
         return m.map(f).join();
     }),
@@ -88,7 +88,7 @@ var core = {
         return function ()
         {
             var ordinaryArgs = (1 <= arguments.length ?
-                    utils.slice.call(arguments, 0, fn.length - 1) : []),
+                    core.slice.call(arguments, 0, fn.length - 1) : []),
                 restOfTheArgsList = slice.call(arguments, fn.length - 1),
                 args = (fn.length <= arguments.length ?
                     ordinaryArgs.concat([restOfTheArgsList]) : []);
