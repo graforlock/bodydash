@@ -48,5 +48,7 @@ module.exports = {
         extensions: ['', '.js']
 
     },
+
     plugins: config.plugins
+
 };

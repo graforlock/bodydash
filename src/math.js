@@ -30,7 +30,7 @@ var math = {
 
     cube: function(x)
     {
-        return square(x) * x;
+        return math.square(x) * x;
     },
 
     plusplus: function(x)
