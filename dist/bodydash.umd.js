@@ -223,7 +223,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    {
 	        return monad.join();
 	    },
-	    chain: core.curry(function (f, m)
+	    chain: this.curry(function (f, m)
 	    {
 	        return m.map(f).join();
 	    }),
