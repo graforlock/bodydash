@@ -1,4 +1,4 @@
 TODO:
 
--[] Task container implementation
--[] Lazy add-ons need impprovements and refinement
+- [ ] Task container implementation
+- [ ] Lazy add-ons need impprovements and refinement
