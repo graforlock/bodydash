@@ -19,7 +19,7 @@ Maybe.of = function (x)
 
 Maybe.prototype.isNothing = function ()
 {
-    return (this.__value === null || this.__value === undefined);
+    return (this.__value === null || this.__value === undefined || this.__value !== this.__value);
 };
 
 Maybe.prototype.map = function (f)
