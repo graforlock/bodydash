@@ -83,7 +83,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    map: curry(function (f, xs)
 	    {
-	
 	        return xs.map(f);
 	    }),
 	
@@ -92,10 +91,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return xs.filter(f);
 	    }),
 	
-	    reduce: function (f, xs)
+	    reduce: curry(function (f, xs)
 	    {
 	        return xs.reduce(f);
-	    },
+	    }),
 	
 	    head: function (xs)
 	    {
@@ -113,7 +112,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    {
 	        for (var i = 0; i < array.length; i++)
 	        {
-	            cb.call(null, array[i]);
+	            cb.apply(null, [array[i], i]);
 	        }
 	    }),
 	
@@ -128,6 +127,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */
 /***/ function(module, exports) {
 
+	//--->>> Arrays
+	
 	function curry(fn)
 	{
 	    var arity = fn.length;

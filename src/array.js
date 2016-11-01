@@ -6,7 +6,6 @@ var array = {
 
     map: curry(function (f, xs)
     {
-
         return xs.map(f);
     }),
 
@@ -15,10 +14,10 @@ var array = {
         return xs.filter(f);
     }),
 
-    reduce: function (f, xs)
+    reduce: curry(function (f, xs)
     {
         return xs.reduce(f);
-    },
+    }),
 
     head: function (xs)
     {
@@ -36,7 +35,7 @@ var array = {
     {
         for (var i = 0; i < array.length; i++)
         {
-            cb.call(null, array[i]);
+            cb.apply(null, [array[i], i]);
         }
     }),
 
