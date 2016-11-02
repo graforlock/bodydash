@@ -25,7 +25,7 @@ test('ARRAY', function (t)
 
     /* @Before */
     var setup = {
-        array : [1, 2, 3, 4, 5]
+        array: [1, 2, 3, 4, 5]
     };
 
     /* @Tests */
