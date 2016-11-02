@@ -13,7 +13,7 @@ var gSetup = {
     }
 };
 
-test('array', function (t)
+test('ARRAY', function (t)
 {
     t.plan(6);
 
@@ -65,7 +65,7 @@ test('array', function (t)
     t.end();
 });
 
-test('container', function (t)
+test('CONTAINER', function (t)
 {
     t.plan(4);
 
@@ -96,7 +96,7 @@ test('container', function (t)
     t.end();
 });
 
-test('contracts', function (t)
+test('CONTRACTS', function (t)
 {
     t.plan(4);
 
@@ -128,7 +128,7 @@ test('contracts', function (t)
 
 });
 
-test('curry', function (t)
+test('CURRY', function (t)
 {
     t.plan(1);
 
