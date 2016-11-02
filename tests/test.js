@@ -13,7 +13,8 @@ var gSetup = {
     {
         return JSON.stringify(a) === JSON.stringify(b);
     },
-    compareFunc: function(a, b) {
+    compareFunc: function (a, b)
+    {
         return a.toString() === b.toString();
     }
 };
@@ -23,7 +24,7 @@ test('ARRAY', function (t)
     t.plan(6);
 
     /* @Before */
-    //...
+    //... no setup
 
     /* @Tests */
     var mapT = array.map(function (a)
@@ -75,7 +76,7 @@ test('CONTAINER', function (t)
     t.plan(4);
 
     /* @Before */
-    //...
+    //... no setup
 
     /* @Tests */
     var ContainerT = Container.of(5),
@@ -112,7 +113,9 @@ test('CONTRACTS', function (t)
             var _type = {}.toString;
             return _type.call(o);
         },
-        func: function() {}
+        func: function ()
+        {
+        }
     };
     var divElement = document.createElement('div');
 
@@ -122,10 +125,10 @@ test('CONTRACTS', function (t)
         numT = contracts.num(0),
         objT = contracts.obj({}),
         funcArrT = contracts.funcArr([setup.func, setup.func]),
-        numArrT = contracts.numArr([1,2,3]),
+        numArrT = contracts.numArr([1, 2, 3]),
         strArrT = contracts.strArr(['A', 'B', 'C']),
-        objArrT = contracts.objArr([{},{},{}]),
-        arrArrT = contracts.arrArr([[],[],[]]),
+        objArrT = contracts.objArr([{}, {}, {}]),
+        arrArrT = contracts.arrArr([[], [], []]),
         classOfT = contracts.classOf('HTMLDivElement')(divElement),
         typeOfT = contracts.typeOf('number')(1);
 
@@ -142,13 +145,13 @@ test('CONTRACTS', function (t)
         '| arr(v) -> Validates contract with the array guard.');
     t.equal(gSetup.compare(funcArrT, [setup.func, setup.func]), true,
         '| funcArr(v) -> Validates contract with the function array guard.');
-    t.equal(gSetup.compare(numArrT, [1,2,3]), true,
+    t.equal(gSetup.compare(numArrT, [1, 2, 3]), true,
         '| numArr(v) -> Validates contract with the number array guard.');
-    t.equal(gSetup.compare(strArrT, ['A','B','C']), true,
+    t.equal(gSetup.compare(strArrT, ['A', 'B', 'C']), true,
         '| strArr(v) -> Validates contract with the string array guard.');
-    t.equal(gSetup.compare(objArrT, [{},{},{}]), true,
+    t.equal(gSetup.compare(objArrT, [{}, {}, {}]), true,
         '| objArr(v) -> Validates contract with the object array guard.');
-    t.equal(gSetup.compare(arrArrT, [[],[],[]]), true,
+    t.equal(gSetup.compare(arrArrT, [[], [], []]), true,
         '| arrArr(v) -> Validates contract with the array of arrays guard.');
     t.equal(strT, "Text",
         '| str(v) -> Validates contract with the string guard.');
@@ -211,34 +214,34 @@ test('DEBUG', function (t)
 });
 
 /* TODO:
-test('EITHER', function(t)
-{
+ test('EITHER', function(t)
+ {
 
-});
+ });
 
-test('IO', function(t)
-{
+ test('IO', function(t)
+ {
 
-});
+ });
 
-test('LENS', function(t)
-{
+ test('LENS', function(t)
+ {
 
-});
-
-
-test('LIFT', function(t)
-{
-
-});
-
-test('MATH', function(t)
-{
-
-});
+ });
 
 
-test('MAYBE', function(t)
-{
+ test('LIFT', function(t)
+ {
 
-}); */
+ });
+
+ test('MATH', function(t)
+ {
+
+ });
+
+
+ test('MAYBE', function(t)
+ {
+
+ }); */
