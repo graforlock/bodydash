@@ -157,6 +157,7 @@ test('DEBUG', function (t)
 {
     t.plan(1);
 
+    /* @Before */
     var setup = {
         testInput: function (a)
         {
@@ -168,6 +169,7 @@ test('DEBUG', function (t)
         }
     };
 
+    /* @Tests */
     var composedT = core.compose(setup.testOutput, debug("Debugger Log: input is"), setup.testInput);
 
     t.equal(composedT(5), 10,
