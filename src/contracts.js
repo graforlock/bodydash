@@ -36,23 +36,23 @@ var contracts = {
 
     obj: function (o)
     {
-        return utils.classOf('Object')(o);
+        return contracts.classOf('Object')(o);
 
     },
 
     arr: function (a)
     {
-        return utils.classOf('Array')(a);
+        return contracts.classOf('Array')(a);
     },
 
     func: function (f)
     {
-        return utils.typeOf('function')(f);
+        return contracts.typeOf('function')(f);
     },
 
     num: function (n)
     {
-        return utils.typeOf('number')(n);
+        return contracts.typeOf('number')(n);
     },
 
     id: function (x)
@@ -72,33 +72,33 @@ var contracts = {
     {
         return function (a)
         {
-            return utils.arr(a).map(c);
+            return contracts.arr(a).map(c);
         }
     },
 
     funcArr: function (a)
     {
-        return utils.arrayOf(utils.func)(a);
+        return contracts.arrayOf(contracts.func)(a);
     },
 
     numArr: function (a)
     {
-        return utils.arrayOf(utils.num)(a);
+        return contracts.arrayOf(contracts.num)(a);
     },
 
     strArr: function (a)
     {
-        return utils.arrayOf(utils.str)(a);
+        return contracts.arrayOf(contracts.str)(a);
     },
 
     objArr: function (a)
     {
-        return utils.arrayOf(utils.obj)(a);
+        return contracts.arrayOf(contracts.obj)(a);
     },
 
     arrArr: function (a)
     {
-        return utils.arrayOf(utils.arr)(a);
+        return contracts.arrayOf(contracts.arr)(a);
     }
 };
 

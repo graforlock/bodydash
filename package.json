@@ -4,8 +4,8 @@
   "description": "",
   "main": "./dist/bodydash.umd.js",
   "scripts": {
-    "test": "tape tests/test.js",
-    "build" : "webpack --progress --colors  && webpack --progress --colors --prod && rimraf ./dist/index.js"
+    "test": "./node_modules/.bin/browserify tests/test.js | node_modules/.bin/tape-run",
+    "build": "webpack --progress --colors  && webpack --progress --colors --prod && rimraf ./dist/index.js"
   },
   "author": "Maciej Sitko",
   "license": "MIT",
@@ -13,7 +13,9 @@
     "tape": "^4.2.1"
   },
   "devDependencies": {
+    "browserify": "^13.1.1",
     "rimraf": "^2.5.4",
+    "tape-run": "^2.1.4",
     "uglify-js": "^2.7.0",
     "webpack": "^1.13.1"
   }
