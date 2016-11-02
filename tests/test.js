@@ -61,7 +61,7 @@ test('ARRAY', function (t)
         '| map(f, xs) -> Maps numbers.');
     t.equal(gSetup.compare(filterT, [1, 3, 5]), true,
         '| filter(f, xs) -> Filters Odd numbers.');
-    t.equal(reduceT, 30, true,
+    t.equal(reduceT, 30,
         '| reduce(f, xs) -> Reduces Odd numbers.');
     t.equal(first, 2,
         '| head(xs) -> Returns first item in the array.');
