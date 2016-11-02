@@ -21,24 +21,26 @@ var gSetup = {
 
 test('ARRAY', function (t)
 {
-    t.plan(6);
+    t.plan(8);
 
     /* @Before */
-    //... no setup
+    var setup = {
+        array : [1, 2, 3, 4, 5]
+    };
 
     /* @Tests */
     var mapT = array.map(function (a)
         {
             return a * 2;
-        }, [1, 2, 3, 4, 5]),
+        }, setup.array),
         filterT = array.filter(function (a)
         {
-            return a === 1 || a % 3 === 0;
-        }, mapT),
+            return a % 2 !== 0;
+        }, setup.array),
         reduceT = array.reduce(function (a, b)
         {
             return a + b;
-        }, filterT),
+        }, mapT),
         first = array.head(mapT),
         last = array.last(mapT),
         safeFirst = array.safeHead(mapT),
@@ -55,8 +57,12 @@ test('ARRAY', function (t)
     }, [1, 2, 3, 4]);
     out = [].slice.call(out, 1, out.length);
 
-    t.equal(reduceT, 6,
-        '| reduce(f, xs) -> Reduces Even numbers.');
+    t.equal(gSetup.compare(mapT, [2, 4, 6, 8, 10]), true,
+        '| map(f, xs) -> Maps numbers.');
+    t.equal(gSetup.compare(filterT, [1, 3, 5]), true,
+        '| filter(f, xs) -> Filters Odd numbers.');
+    t.equal(reduceT, 30, true,
+        '| reduce(f, xs) -> Reduces Odd numbers.');
     t.equal(first, 2,
         '| head(xs) -> Returns first item in the array.');
     t.equal(last, 10,
