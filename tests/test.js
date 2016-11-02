@@ -79,7 +79,7 @@ test('container', function (t)
 
 test('contracts', function (t)
 {
-    t.plan(3);
+    t.plan(4);
 
     var helpers = {
         objCheck: function (o)
@@ -92,12 +92,13 @@ test('contracts', function (t)
 
     var arrT = contracts.arr([]),
         strT = contracts.str("Text"),
-        classOfT = contracts.classOf('HTMLDivElement')
-        (divElement);
+        classOfT = contracts.classOf('HTMLDivElement')(divElement),
+        typeOfT = contracts.typeOf('number')(1);
 
     t.equal(helpers.objCheck(arrT), true);
     t.equal(strT, "Text");
     t.equal(gHelpers.compare(classOfT), gHelpers.compare(divElement));
+    t.equal(typeOfT, 1);
 
     t.end();
 
