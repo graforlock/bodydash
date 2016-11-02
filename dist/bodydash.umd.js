@@ -69,7 +69,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    object: __webpack_require__(3),
 	    string: __webpack_require__(14),
 	    take: __webpack_require__(15),
-	    utils: __webpack_require__(10)
+	    core: __webpack_require__(10)
 	};
 
 /***/ },
@@ -477,7 +477,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> I/O
-	var utils = __webpack_require__(10),
+	var core = __webpack_require__(10),
 	    debug = __webpack_require__(7),
 	    array = __webpack_require__(1);
 	
@@ -496,7 +496,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	IO.prototype.map = function (f)
 	{
-	    return new IO(utils.compose(f, this.__value));
+	    return new IO(core.compose(f, this.__value));
 	};
 	
 	IO.prototype.emap = function (f)
@@ -506,7 +506,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    return this.chain(function (e)
 	    {
-	        return new IO(utils.compose(e.__value, f));
+	        return new IO(core.compose(e.__value, f));
 	        // it will lose I/O; has to be some means to prevent it
 	    });
 	};
@@ -532,7 +532,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	IO.prototype.first = function ()
 	{
-	    return new IO(utils.compose(head, this.__value));
+	    return new IO(core.compose(head, this.__value));
 	};
 	
 	
@@ -575,6 +575,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	//-->>> General Tools
 	var contracts = __webpack_require__(4),
+	    array = __webpack_require__(1),
 	    Maybe = __webpack_require__(5),
 	    curry = __webpack_require__(2);
 	
@@ -588,15 +589,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	    compose: function ()
 	    {
-	        var funcs = core.arrayOf(core.func)([].slice.call(arguments));
-	        return function ()
+	        var funcs = contracts.arrayOf(contracts.func)([].slice.call(arguments));
+	        return function(arg)
 	        {
-	            var fargs = arguments;
-	            for (var i = funcs.length - 1; i >= 0; i -= 1)
+	            return funcs.reverse().reduce(function(a, b)
 	            {
-	                fargs = [funcs[i].apply(this, fargs)];
-	            }
-	            return fargs[0];
+	                return b(a);
+	            }, arg);
 	        }
 	    },
 	    mcompose: function (f, g)
@@ -629,7 +628,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return function ()
 	            {
 	                var second = core.toArray(arguments);
-	                return fn.apply(this, concat(second, first));
+	                return fn.apply(this, array.concat(second, first));
 	            };
 	        };
 	    },

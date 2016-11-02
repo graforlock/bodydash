@@ -13,5 +13,5 @@ module.exports = {
     object: require('./object'),
     string: require('./string'),
     take: require('./take'),
-    utils: require('./utils')
+    core: require('./core')
 };

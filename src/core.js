@@ -1,5 +1,6 @@
 //-->>> General Tools
 var contracts = require('./contracts'),
+    array = require('./array'),
     Maybe = require('./maybe'),
     curry = require('./curry');
 
@@ -13,15 +14,13 @@ var core = {
     },
     compose: function ()
     {
-        var funcs = core.arrayOf(core.func)([].slice.call(arguments));
-        return function ()
+        var funcs = contracts.arrayOf(contracts.func)([].slice.call(arguments));
+        return function(arg)
         {
-            var fargs = arguments;
-            for (var i = funcs.length - 1; i >= 0; i -= 1)
+            return funcs.reverse().reduce(function(a, b)
             {
-                fargs = [funcs[i].apply(this, fargs)];
-            }
-            return fargs[0];
+                return b(a);
+            }, arg);
         }
     },
     mcompose: function (f, g)
@@ -54,7 +53,7 @@ var core = {
             return function ()
             {
                 var second = core.toArray(arguments);
-                return fn.apply(this, concat(second, first));
+                return fn.apply(this, array.concat(second, first));
             };
         };
     },

@@ -3,7 +3,9 @@ var test = require('tape'),
     array = b.array,
     Container = b.container,
     contracts = b.contracts,
-    curry = b.curry;
+    curry = b.curry,
+    debug = b.debug,
+    core = b.core;
 
 /* @Before All Tests */
 var gSetup = {
@@ -150,3 +152,59 @@ test('CURRY', function (t)
     t.end();
 
 });
+
+test('DEBUG', function (t)
+{
+    t.plan(1);
+
+    var setup = {
+        testInput: function (a)
+        {
+            return a;
+        },
+        testOutput: function (a)
+        {
+            return a + a;
+        }
+    };
+
+    var composedT = core.compose(setup.testOutput, debug("Debugger Log: input is"), setup.testInput);
+
+    t.equal(composedT(5), 10,
+        '| debug(s, v) -> Should pass the value around and perform console.log side effect.');
+
+    t.end();
+
+});
+
+// test('EITHER', function(t)
+// {
+//
+// });
+//
+// test('IO', function(t)
+// {
+//
+// });
+//
+// test('LENS', function(t)
+// {
+//
+// });
+//
+//
+// test('LIFT', function(t)
+// {
+//
+// });
+//
+// test('MATH', function(t)
+// {
+//
+// });
+//
+//
+// test('MAYBE', function(t)
+// {
+//
+// });
