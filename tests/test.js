@@ -11,7 +11,10 @@ var test = require('tape'),
 var gSetup = {
     compare: function (a, b)
     {
-        return JSON.stringify(b) === JSON.stringify(b);
+        return JSON.stringify(a) === JSON.stringify(b);
+    },
+    compareFunc: function(a, b) {
+        return a.toString() === b.toString();
     }
 };
 
@@ -100,28 +103,56 @@ test('CONTAINER', function (t)
 
 test('CONTRACTS', function (t)
 {
-    t.plan(4);
+    t.plan(12);
 
     /* @Before */
     var setup = {
         objCheck: function (o)
         {
-            return typeof o === 'object';
-        }
+            var _type = {}.toString;
+            return _type.call(o);
+        },
+        func: function() {}
     };
     var divElement = document.createElement('div');
 
     /* @Tests */
     var arrT = contracts.arr([]),
         strT = contracts.str("Text"),
+        numT = contracts.num(0),
+        objT = contracts.obj({}),
+        funcArrT = contracts.funcArr([setup.func, setup.func]),
+        numArrT = contracts.numArr([1,2,3]),
+        strArrT = contracts.strArr(['A', 'B', 'C']),
+        objArrT = contracts.objArr([{},{},{}]),
+        arrArrT = contracts.arrArr([[],[],[]]),
         classOfT = contracts.classOf('HTMLDivElement')(divElement),
         typeOfT = contracts.typeOf('number')(1);
 
-    t.equal(setup.objCheck(arrT), true,
-        '| arr(v) -> Validates contract with a arr guard.');
+    t.equal(numT, 0,
+        '| num(v) -> Validates contract with the number guard.');
+    t.equal(gSetup.compare(objT, {}), true,
+        '| obj(v) -> Validates contract with the object guard.');
+    t.equal(gSetup.compareFunc(contracts.func(
+        setup.func),
+        setup.func),
+        true,
+        '| func(v) -> Validates contract with the function guard.');
+    t.equal(setup.objCheck(arrT), '[object Array]',
+        '| arr(v) -> Validates contract with the array guard.');
+    t.equal(gSetup.compare(funcArrT, [setup.func, setup.func]), true,
+        '| funcArr(v) -> Validates contract with the function array guard.');
+    t.equal(gSetup.compare(numArrT, [1,2,3]), true,
+        '| numArr(v) -> Validates contract with the number array guard.');
+    t.equal(gSetup.compare(strArrT, ['A','B','C']), true,
+        '| strArr(v) -> Validates contract with the string array guard.');
+    t.equal(gSetup.compare(objArrT, [{},{},{}]), true,
+        '| objArr(v) -> Validates contract with the object array guard.');
+    t.equal(gSetup.compare(arrArrT, [[],[],[]]), true,
+        '| arrArr(v) -> Validates contract with the array of arrays guard.');
     t.equal(strT, "Text",
-        '| str(v) -> Validates contract with a str guard.');
-    t.equal(gSetup.compare(classOfT), gSetup.compare(divElement),
+        '| str(v) -> Validates contract with the string guard.');
+    t.equal(gSetup.compare(classOfT, divElement), true,
         '| classOf(t)(v) -> Ascertains object type and outputs the value if compatible.');
     t.equal(typeOfT, 1,
         '| typeOf(t)(v) -> Ascertains primitive type and outputs the value if compatible.');

@@ -55,19 +55,6 @@ var contracts = {
         return contracts.typeOf('number')(n);
     },
 
-    id: function (x)
-    {
-        return x;
-    },
-
-    isArr: function (a)
-    {
-        if ({}.toString.call(a) === '[object Array]')
-            return a;
-        else
-            return false;
-    },
-
     arrayOf: function (c)
     {
         return function (a)

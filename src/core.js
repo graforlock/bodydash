@@ -57,6 +57,10 @@ var core = {
             };
         };
     },
+    id: function (x)
+    {
+        return x;
+    },
     join: function (monad)
     {
         return monad.join();
