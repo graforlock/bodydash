@@ -84,10 +84,14 @@ test('container', function (t)
             return value * value
         });
 
-    t.equal(ContainerT.__value, 5);
-    t.equal(ContainerT.__value, ContainerT2.__value);
-    t.equal(ContainerMapT.__value, 25);
-    t.equal(ContainerMapT.__value, ContainerMapT2.__value);
+    t.equal(ContainerT.__value, 5,
+        '| Container.of(v) -> Contains the number 5.');
+    t.equal(ContainerT.__value, ContainerT2.__value,
+        '| Container.of(v) and new Container(v) -> Both values in Containers are the same.');
+    t.equal(ContainerMapT.__value, 25,
+        '| Container.map(f) -> Container.of maps and the value is expected.');
+    t.equal(ContainerMapT.__value, ContainerMapT2.__value,
+        '| new Container(v) -> Contain maps and the value is expected.');
 
     t.end();
 });
