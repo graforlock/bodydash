@@ -179,35 +179,35 @@ test('DEBUG', function (t)
 
 });
 
-// TODO:
-// test('EITHER', function(t)
-// {
-//
-// });
-//
-// test('IO', function(t)
-// {
-//
-// });
-//
-// test('LENS', function(t)
-// {
-//
-// });
-//
-//
-// test('LIFT', function(t)
-// {
-//
-// });
-//
-// test('MATH', function(t)
-// {
-//
-// });
-//
-//
-// test('MAYBE', function(t)
-// {
-//
-// });
+/* TODO:
+test('EITHER', function(t)
+{
+
+});
+
+test('IO', function(t)
+{
+
+});
+
+test('LENS', function(t)
+{
+
+});
+
+
+test('LIFT', function(t)
+{
+
+});
+
+test('MATH', function(t)
+{
+
+});
+
+
+test('MAYBE', function(t)
+{
+
+}); */
