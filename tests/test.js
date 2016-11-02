@@ -1,6 +1,7 @@
 var test = require('tape'),
     b = require('../dist/bodydash.umd.js'),
-    array = b.array;
+    array = b.array,
+    Container = b.container;
 
 
 test('array', function (t)
@@ -29,3 +30,22 @@ test('array', function (t)
 
     t.end();
 });
+
+test('container', function (t)
+{
+    t.plan(4);
+
+    var ContainerT = Container.of(5),
+        ContainerT2 = new Container(5),
+        ContainerMapT = ContainerT.map(function(value) { return value * value}),
+        ContainerMapT2 = ContainerT2.map(function(value) { return value * value});
+
+
+    t.equal(ContainerT.__value, 5);
+    t.equal(ContainerT.__value, ContainerT2.__value);
+    t.equal(ContainerMapT.__value, 25);
+    t.equal(ContainerMapT.__value, ContainerMapT2.__value);
+
+    t.end();
+});
+
