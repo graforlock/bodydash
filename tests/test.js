@@ -4,6 +4,7 @@ var test = require('tape'),
     Container = b.container,
     contracts = b.contracts;
 
+/* @Before All Tests*/
 var gHelpers = {
     compare: function (a, b)
     {
@@ -15,6 +16,7 @@ test('array', function (t)
 {
     t.plan(6);
 
+    /* @Tests */
     var mapT = array.map(function (a)
         {
             return a * 2;
@@ -57,6 +59,7 @@ test('container', function (t)
 {
     t.plan(4);
 
+    /* @Tests */
     var ContainerT = Container.of(5),
         ContainerT2 = new Container(5),
         ContainerMapT = ContainerT.map(function (value)
@@ -67,7 +70,6 @@ test('container', function (t)
         {
             return value * value
         });
-
 
     t.equal(ContainerT.__value, 5);
     t.equal(ContainerT.__value, ContainerT2.__value);
@@ -81,15 +83,16 @@ test('contracts', function (t)
 {
     t.plan(4);
 
+    /* @Before */
     var helpers = {
         objCheck: function (o)
         {
             return typeof o === 'object';
         }
     };
-
     var divElement = document.createElement('div');
 
+    /* @Tests */
     var arrT = contracts.arr([]),
         strT = contracts.str("Text"),
         classOfT = contracts.classOf('HTMLDivElement')(divElement),
