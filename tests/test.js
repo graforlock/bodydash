@@ -120,7 +120,7 @@ test('CONTRACTS', function (t)
     t.equal(strT, "Text",
         '| str(v) -> Validates contract with a str guard.');
     t.equal(gSetup.compare(classOfT), gSetup.compare(divElement),
-        '| Ascertains object type and outputs the value if compatible.');
+        '| classOf(t)(v) -> Ascertains object type and outputs the value if compatible.');
     t.equal(typeOfT, 1,
         '| typeOf(t)(v) -> Ascertains primitive type and outputs the value if compatible.');
 
