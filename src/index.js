@@ -2,6 +2,7 @@ module.exports = {
     array: require('./array'),
     container: require('./container'),
     contracts: require('./contracts'),
+    curry: require('./curry'),
     debug: require('./debug'),
     either: require('./either'),
     io: require('./io'),

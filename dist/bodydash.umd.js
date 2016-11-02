@@ -58,6 +58,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    array: __webpack_require__(1),
 	    container: __webpack_require__(6),
 	    contracts: __webpack_require__(4),
+	    curry: __webpack_require__(2),
 	    debug: __webpack_require__(7),
 	    either: __webpack_require__(8),
 	    io: __webpack_require__(9),
