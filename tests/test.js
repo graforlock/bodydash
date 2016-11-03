@@ -5,7 +5,10 @@ var test = require('tape'),
     contracts = b.contracts,
     curry = b.curry,
     debug = b.debug,
-    core = b.core;
+    core = b.core,
+    Left = b.left,
+    Right = b.right,
+    either = b.either;
 
 /* @Before All Tests */
 var gSetup = {
@@ -219,12 +222,28 @@ test('DEBUG', function (t)
 
 });
 
+
+test('EITHER', function (t)
+{
+    t.plan(1);
+
+    var setup = {
+        result: function(a, b) { return 'Left hand side is [ ' + a +', ' + b + ' ]';},
+        resolve: function(f) { return setup.result(f[0].id, f[1].id);},
+        reject: function() { console.log('Right hand side rejection.')}
+    };
+
+    var left = new Left([{ id: 1},{ id: 2}]),
+        right = new Right({err: 404}),
+        eitherT = either(setup.resolve, setup.reject, left);
+
+    t.equal(eitherT, setup.result(1, 2),
+        '| either(f, g, e) -> Ascertains Left or Right side of the statement.');
+
+    t.end();
+});
+
 /* TODO:
- test('EITHER', function(t)
- {
-
- });
-
  test('IO', function(t)
  {
 

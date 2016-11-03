@@ -55,21 +55,23 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = {
-	    array: __webpack_require__(1),
-	    container: __webpack_require__(6),
-	    contracts: __webpack_require__(4),
-	    curry: __webpack_require__(2),
-	    debug: __webpack_require__(7),
-	    either: __webpack_require__(8),
-	    io: __webpack_require__(9),
-	    lens: __webpack_require__(11),
-	    lift: __webpack_require__(12),
-	    math: __webpack_require__(13),
-	    maybe: __webpack_require__(5),
-	    object: __webpack_require__(3),
-	    string: __webpack_require__(14),
-	    take: __webpack_require__(15),
-	    core: __webpack_require__(10)
+	    array       : __webpack_require__(1),
+	    container   : __webpack_require__(6),
+	    contracts   : __webpack_require__(4),
+	    curry       : __webpack_require__(2),
+	    debug       : __webpack_require__(7),
+	    either      : __webpack_require__(8),
+	    io          : __webpack_require__(11),
+	    left        : __webpack_require__(9),
+	    lens        : __webpack_require__(13),
+	    lift        : __webpack_require__(14),
+	    math        : __webpack_require__(15),
+	    maybe       : __webpack_require__(5),
+	    object      : __webpack_require__(3),
+	    right       : __webpack_require__(10),
+	    string      : __webpack_require__(16),
+	    take        : __webpack_require__(17),
+	    core        : __webpack_require__(12)
 	};
 
 /***/ },
@@ -303,19 +305,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return contracts.typeOf('number')(n);
 	    },
 	
-	    id: function (x)
-	    {
-	        return x;
-	    },
-	
-	    isArr: function (a)
-	    {
-	        if ({}.toString.call(a) === '[object Array]')
-	            return a;
-	        else
-	            return false;
-	    },
-	
 	    arrayOf: function (c)
 	    {
 	        return function (a)
@@ -439,7 +428,22 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	//--->> Either
-	var curry = __webpack_require__(2);
+	var curry = __webpack_require__(2),
+	    Left = __webpack_require__(9),
+	    Right = __webpack_require__(10);
+	
+	module.exports = curry(function(f /* identity in mose cases */, g, e) {
+	     switch (e.constructor) { 
+	        case Left: return f(e.__value); 
+	        case Right: return g(e.__value); 
+	    } 
+	});
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	//--->> Left
 	
 	function Left(x) {
 	    this.__value = x;
@@ -453,6 +457,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this;
 	};
 	
+	module.exports = Left;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	//--->> Right
+	
 	function Right(x) {
 	    this.__value = x;
 	}
@@ -465,19 +477,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return Right.of(f(this.__value));
 	};
 	
-	module.exports = curry(function(f /* identity in mose cases */, g, e) {
-	     switch (e.constructor) { 
-	        case Left: return f(e.__value); 
-	        case Right: return g(e.__value); 
-	    } 
-	});
+	module.exports = Right;
+
 
 /***/ },
-/* 9 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> I/O
-	var core = __webpack_require__(10),
+	var core = __webpack_require__(12),
 	    debug = __webpack_require__(7),
 	    array = __webpack_require__(1);
 	
@@ -570,7 +578,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = IO;
 
 /***/ },
-/* 10 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> General Tools
@@ -632,6 +640,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            };
 	        };
 	    },
+	    id: function (x)
+	    {
+	        return x;
+	    },
 	    join: function (monad)
 	    {
 	        return monad.join();
@@ -670,7 +682,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 13 */
 /***/ function(module, exports) {
 
 	//-->>> Lenses
@@ -696,7 +708,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = lens;
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Lift
@@ -724,7 +736,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = lift;
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Math add-ons
@@ -783,7 +795,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> String add-ons
@@ -818,7 +830,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Lazy add-ons
