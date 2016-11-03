@@ -15,33 +15,24 @@ Seq.of = function (v)
     });
 };
 
-Seq.prototype.join = function()
-{
-    return this.__value();
-};
-
-Seq.prototype.lift = function(other, fn)
-{
-    other = other.__value;
-    return new Seq(function()
-    {
-        return fn(this.__value(), other())
-    }.bind(this));
-};
-
-Seq.prototype.take = curry(function(num, fn)
+Seq.prototype.take = curry(function(num, f)
 {
     var list = [];
     for(var i = 1; i < num; i++)
     {
-        list.push(fn);
+        list.push(f);
     }
     return compose.apply(null, list)(this.join());
 });
 
+Seq.prototype.map = function(f)
+{
+    return new Seq(compose(f, this.__value));
+};
+
 Seq.prototype.ap = function (other)
 {
-    return other.map(this.__value);
+    return other.map(this.__value());
 };
 
 
