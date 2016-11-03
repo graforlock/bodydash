@@ -14,6 +14,7 @@ module.exports = {
     object      : require('./object'),
     right       : require('./right'),
     string      : require('./string'),
+    seq         : require('./seq'),
     take        : require('./take'),
     core        : require('./core')
 };

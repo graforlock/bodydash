@@ -8,7 +8,7 @@ function Seq(v)
     this.take = curry(function (num, f)
     {
         var list = [];
-        for (var i = 1; i < num; i++)
+        for (var i = 1; i <= num; i++)
         {
             list.push(f);
         }

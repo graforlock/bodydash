@@ -70,7 +70,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    object      : __webpack_require__(3),
 	    right       : __webpack_require__(10),
 	    string      : __webpack_require__(16),
-	    take        : __webpack_require__(17),
+	    seq         : __webpack_require__(17),
+	    take        : __webpack_require__(18),
 	    core        : __webpack_require__(12)
 	};
 
@@ -130,7 +131,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */
 /***/ function(module, exports) {
 
-	//--->>> Arrays
+	//--->>> Curry/Partial Application
 	
 	function curry(fn)
 	{
@@ -151,6 +152,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	module.exports = curry;
+
 
 /***/ },
 /* 3 */
@@ -485,9 +487,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> I/O
-	var core = __webpack_require__(12),
+	var compose = __webpack_require__(12).compose,
 	    debug = __webpack_require__(7),
-	    array = __webpack_require__(1);
+	    head = __webpack_require__(1).head,
+	    each = __webpack_require__(1).each;
 	
 	function IO(f)
 	{
@@ -504,7 +507,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	IO.prototype.map = function (f)
 	{
-	    return new IO(core.compose(f, this.__value));
+	    return new IO(compose(f, this.__value));
 	};
 	
 	IO.prototype.emap = function (f)
@@ -514,7 +517,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    return this.chain(function (e)
 	    {
-	        return new IO(core.compose(e.__value, f));
+	        return new IO(compose(e.__value, f));
 	        // it will lose I/O; has to be some means to prevent it
 	    });
 	};
@@ -540,7 +543,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	IO.prototype.first = function ()
 	{
-	    return new IO(core.compose(head, this.__value));
+	    return new IO(compose(head, this.__value));
 	};
 	
 	
@@ -566,12 +569,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	IO.prototype.each = function (f)
 	{
-	    return new IO(array.each(f, this.__value()));
+	    return new IO(each(f, this.__value()));
 	};
 	
 	IO.prototype.ap = function (other)
 	{
-	    return other.map(this.__value()); // Function requirement
+	    return other.map(this.join());
 	};
 	
 	
@@ -831,6 +834,51 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	//--->>> Lazy Sequence
+	var compose = __webpack_require__(12).compose,
+	    curry = __webpack_require__(2);
+	
+	function Seq(v)
+	{
+	    this.__value = v;
+	    this.take = curry(function (num, f)
+	    {
+	        var list = [];
+	        for (var i = 1; i <= num; i++)
+	        {
+	            list.push(f);
+	        }
+	        return new Seq(function ()
+	        {
+	            return compose.apply(null, list)(this.__value());
+	        }.bind(this));
+	    }.bind(this));
+	}
+	
+	Seq.of = function (v)
+	{
+	    return new Seq(function ()
+	    {
+	        return v;
+	    });
+	};
+	
+	Seq.prototype.map = function (f)
+	{
+	    return new Seq(compose(f, this.__value));
+	};
+	
+	Seq.prototype.ap = function (other)
+	{
+	    return other.map(this.__value());
+	};
+	
+	module.exports = Seq;
+
+/***/ },
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Lazy add-ons
