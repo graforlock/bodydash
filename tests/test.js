@@ -225,20 +225,32 @@ test('DEBUG', function (t)
 
 test('EITHER', function (t)
 {
-    t.plan(1);
+    t.plan(2);
 
     var setup = {
-        result: function(a, b) { return 'Left hand side is [ ' + a +', ' + b + ' ]';},
-        resolve: function(f) { return setup.result(f[0].id, f[1].id);},
-        reject: function() { console.log('Right hand side rejection.')}
+        result: function (a, b)
+        {
+            return 'Left hand side is [ ' + a + ', ' + b + ' ]';
+        },
+        resolve: function (f)
+        {
+            return setup.result(f[0].id, f[1].id);
+        },
+        reject: function (err)
+        {
+            return 'Right hand side rejection with ' + err.status;
+        }
     };
 
-    var left = new Left([{ id: 1},{ id: 2}]),
-        right = new Right({err: 404}),
-        eitherT = either(setup.resolve, setup.reject, left);
+    var left = new Left([{id: 1}, {id: 2}]),
+        right = new Right({status: 404}),
+        eitherT = either(setup.resolve, setup.reject, left),
+        eitherT2 = either(setup.resolve, setup.reject, right);
 
     t.equal(eitherT, setup.result(1, 2),
-        '| either(f, g, e) -> Ascertains Left or Right side of the statement.');
+        '| either(f, g, e) -> Ascertains Left side of the statement.');
+    t.equal(eitherT2, setup.reject({status: 404}),
+        '| either(f, g, e) -> Ascertains Right side of the statement.');
 
     t.end();
 });
