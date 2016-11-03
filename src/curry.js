@@ -1,4 +1,4 @@
-//--->>> Arrays
+//--->>> Curry/Partial Application
 
 function curry(fn)
 {
