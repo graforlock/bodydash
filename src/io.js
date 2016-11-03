@@ -85,7 +85,7 @@ IO.prototype.each = function (f)
 
 IO.prototype.ap = function (other)
 {
-    return other.map(this.__value()); // Function requirement
+    return other.map(this.__value);
 };
 
 
