@@ -5,6 +5,7 @@ var contracts = require('./contracts'),
     curry = require('./curry');
 
 var core = {
+
     bind: function (fn, context)
     {
         return function ()
@@ -12,6 +13,7 @@ var core = {
             return fn.apply(context, arguments);
         }
     },
+
     compose: function ()
     {
         var funcs = contracts.arrayOf(contracts.func)([].slice.call(arguments));
@@ -23,10 +25,12 @@ var core = {
             }, arg);
         }
     },
+
     mcompose: function (f, g)
     {
         return core.compose(core.chain(f), core.chain(g));
     },
+
     flatten: function (array)
     {
         return contracts.arr(array).reduce(function (a, b)
@@ -45,6 +49,7 @@ var core = {
             };
         };
     },
+
     flipMany: function (fn)
     {
         return function ()
@@ -57,41 +62,32 @@ var core = {
             };
         };
     },
+
     id: function (x)
     {
         return x;
     },
+
     join: function (monad)
     {
         return monad.join();
     },
+
     chain: curry(function (f, m)
     {
         return m.map(f).join();
     }),
-    variadic: function (fn)
-    {
-        if (fn.length < 1) return fn;
 
-        return function ()
-        {
-            var ordinaryArgs = (1 <= arguments.length ?
-                    core.slice.call(arguments, 0, fn.length - 1) : []),
-                restOfTheArgsList = slice.call(arguments, fn.length - 1),
-                args = (fn.length <= arguments.length ?
-                    ordinaryArgs.concat([restOfTheArgsList]) : []);
-
-            return fn.apply(this, args);
-        }
-    },
     toArray: function (array)
     {
         return [array];
     },
+
     safeArray: function (array)
     {
         return new Maybe([].slice.call(array));
     }
+
 };
 
 module.exports = core;
