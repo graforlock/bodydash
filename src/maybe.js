@@ -1,5 +1,7 @@
 //-->>> Maybe
-var curry = require('./curry');
+var curry = require('./curry'),
+    Just = require('./just'),
+    None = require('./none');
 
 function Maybe(x)
 {
@@ -8,8 +10,7 @@ function Maybe(x)
 
 Maybe.maybe = curry(function (x, f, m)
 {
-    return m.isNothing() ? x : f(m.__value);
-    // Maybe helper for custom value (instead of 'null')
+    return m.isNone() ? None.of(x) : Just.of(f(m.__value));
 });
 
 Maybe.of = function (x)
@@ -17,19 +18,29 @@ Maybe.of = function (x)
     return new Maybe(x);
 };
 
-Maybe.prototype.isNothing = function ()
+Maybe.prototype.isJust =function ()
+{
+    return this.constructor === Just;
+};
+
+Maybe.prototype.isNone = function ()
+{
+    return this.constructor === None;
+};
+
+Maybe.prototype.isNothing = function()
 {
     return (this.__value === null || this.__value === undefined || this.__value !== this.__value);
 };
 
 Maybe.prototype.map = function (f)
 {
-    return this.isNothing() ? Maybe.of(null) : Maybe.of(f(this.__value));
+    return this.isNothing ? None.of(null) : Just.of(f(this.__value));
 };
 
 Maybe.prototype.join = function ()
 {
-    return this.isNothing() ? Maybe.of(null) : this.__value;
+    return this.isNone() ? None.of(null) : this.__value;
 };
 
 Maybe.prototype.ap = function (other)

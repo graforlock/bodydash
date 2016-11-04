@@ -56,22 +56,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 	    array       : __webpack_require__(1),
-	    container   : __webpack_require__(6),
+	    container   : __webpack_require__(8),
 	    contracts   : __webpack_require__(4),
 	    curry       : __webpack_require__(2),
-	    debug       : __webpack_require__(7),
-	    either      : __webpack_require__(8),
-	    io          : __webpack_require__(11),
-	    left        : __webpack_require__(9),
-	    lens        : __webpack_require__(13),
-	    lift        : __webpack_require__(14),
-	    math        : __webpack_require__(15),
+	    debug       : __webpack_require__(9),
+	    either      : __webpack_require__(10),
+	    io          : __webpack_require__(13),
+	    left        : __webpack_require__(11),
+	    lens        : __webpack_require__(15),
+	    lift        : __webpack_require__(16),
+	    math        : __webpack_require__(17),
 	    maybe       : __webpack_require__(5),
 	    object      : __webpack_require__(3),
-	    right       : __webpack_require__(10),
-	    string      : __webpack_require__(16),
-	    seq         : __webpack_require__(17),
-	    core        : __webpack_require__(12)
+	    right       : __webpack_require__(12),
+	    string      : __webpack_require__(18),
+	    seq         : __webpack_require__(19),
+	    core        : __webpack_require__(14)
 	};
 
 /***/ },
@@ -347,7 +347,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Maybe
-	var curry = __webpack_require__(2);
+	var curry = __webpack_require__(2),
+	    Just = __webpack_require__(6),
+	    None = __webpack_require__(7);
 	
 	function Maybe(x)
 	{
@@ -356,7 +358,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	Maybe.maybe = curry(function (x, f, m)
 	{
-	    return m.isNothing() ? x : f(m.__value);
+	    return m.isNone() ? x : f(m.__value);
 	    // Maybe helper for custom value (instead of 'null')
 	});
 	
@@ -365,19 +367,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new Maybe(x);
 	};
 	
-	Maybe.prototype.isNothing = function ()
+	Maybe.prototype.isJust =function ()
+	{
+	    return this.__value.constructor === Just;
+	};
+	
+	Maybe.prototype.isNone = function ()
+	{
+	    return this.__value.constructor === None;
+	};
+	
+	Maybe.prototype.nothingValue = function()
 	{
 	    return (this.__value === null || this.__value === undefined || this.__value !== this.__value);
 	};
 	
 	Maybe.prototype.map = function (f)
 	{
-	    return this.isNothing() ? Maybe.of(null) : Maybe.of(f(this.__value));
+	    return this.nothingValue() ? None.of(null) : Just.of(f(this.__value));
 	};
 	
 	Maybe.prototype.join = function ()
 	{
-	    return this.isNothing() ? Maybe.of(null) : this.__value;
+	    return this.isNone() ? None.of(null) : this.__value;
 	};
 	
 	Maybe.prototype.ap = function (other)
@@ -391,6 +403,50 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Maybe = __webpack_require__(5);
+	
+	function Just(v)
+	{
+	    Maybe.call(this, v);
+	    this.__value = v;
+	}
+	
+	Just.of = function (v)
+	{
+	    return new Just(v);
+	};
+	
+	Just.prototype = Object.create(Maybe.prototype);
+	Just.prototype.constructor = Just;
+	
+	module.exports = Just;
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Maybe = __webpack_require__(5);
+	
+	function None(v)
+	{
+	    Maybe.call(this, v);
+	    this.__value = v;
+	}
+	
+	None.of = function(v)
+	{
+	    return new None(v);
+	};
+	
+	None.prototype = Object.create(Maybe.prototype);
+	None.prototype.constructor = None;
+	
+	module.exports = None;
+
+/***/ },
+/* 8 */
 /***/ function(module, exports) {
 
 	//-->>> Container
@@ -419,7 +475,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Debug
@@ -433,13 +489,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = curry(debug);
 
 /***/ },
-/* 8 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//--->> Either
 	var curry = __webpack_require__(2),
-	    Left = __webpack_require__(9),
-	    Right = __webpack_require__(10);
+	    Left = __webpack_require__(11),
+	    Right = __webpack_require__(12);
 	
 	module.exports = curry(function(f /* identity in mose cases */, g, e) {
 	     switch (e.constructor) { 
@@ -449,7 +505,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 9 */
+/* 11 */
 /***/ function(module, exports) {
 
 	//--->> Left
@@ -469,7 +525,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Left;
 
 /***/ },
-/* 10 */
+/* 12 */
 /***/ function(module, exports) {
 
 	//--->> Right
@@ -490,13 +546,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> I/O
-	var compose = __webpack_require__(12).compose,
+	var compose = __webpack_require__(14).compose,
 	    func = __webpack_require__(4).func,
-	    debug = __webpack_require__(7),
+	    debug = __webpack_require__(9),
 	    head = __webpack_require__(1).head;
 	
 	function IO(f)
@@ -574,7 +630,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = IO;
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> General Tools
@@ -584,6 +640,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    curry = __webpack_require__(2);
 	
 	var core = {
+	
 	    bind: function (fn, context)
 	    {
 	        return function ()
@@ -591,21 +648,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return fn.apply(context, arguments);
 	        }
 	    },
+	
 	    compose: function ()
 	    {
 	        var funcs = contracts.arrayOf(contracts.func)([].slice.call(arguments));
-	        return function(arg)
+	        return function (arg)
 	        {
-	            return funcs.reverse().reduce(function(a, b)
+	            return funcs.reverse().reduce(function (a, b)
 	            {
 	                return b(a);
 	            }, arg);
 	        }
 	    },
+	
 	    mcompose: function (f, g)
 	    {
 	        return core.compose(core.chain(f), core.chain(g));
 	    },
+	
 	    flatten: function (array)
 	    {
 	        return contracts.arr(array).reduce(function (a, b)
@@ -614,16 +674,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	    },
 	
-	    flip: function (fn)
+	    flip: curry(function (fn, first, second)
 	    {
-	        return function (first)
-	        {
-	            return function (second)
-	            {
-	                return fn.call(this, second, first);
-	            };
-	        };
-	    },
+	        return fn.call(this, second, first);
+	    }),
+	
 	    flipMany: function (fn)
 	    {
 	        return function ()
@@ -636,41 +691,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	            };
 	        };
 	    },
+	
 	    id: function (x)
 	    {
 	        return x;
 	    },
+	
 	    join: function (monad)
 	    {
 	        return monad.join();
 	    },
+	
 	    chain: curry(function (f, m)
 	    {
 	        return m.map(f).join();
 	    }),
-	    variadic: function (fn)
-	    {
-	        if (fn.length < 1) return fn;
 	
-	        return function ()
-	        {
-	            var ordinaryArgs = (1 <= arguments.length ?
-	                    core.slice.call(arguments, 0, fn.length - 1) : []),
-	                restOfTheArgsList = slice.call(arguments, fn.length - 1),
-	                args = (fn.length <= arguments.length ?
-	                    ordinaryArgs.concat([restOfTheArgsList]) : []);
-	
-	            return fn.apply(this, args);
-	        }
-	    },
 	    toArray: function (array)
 	    {
 	        return [array];
 	    },
+	
 	    safeArray: function (array)
 	    {
 	        return new Maybe([].slice.call(array));
 	    }
+	
 	};
 	
 	module.exports = core;
@@ -678,7 +724,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports) {
 
 	//-->>> Lenses
@@ -704,7 +750,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = lens;
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Lift
@@ -737,7 +783,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = lift;
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Math add-ons
@@ -796,7 +842,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 16 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> String add-ons
@@ -831,11 +877,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//--->>> Lazy Sequence
-	var compose = __webpack_require__(12).compose,
+	var compose = __webpack_require__(14).compose,
 	    func = __webpack_require__(4).func,
 	    curry = __webpack_require__(2);
 	
