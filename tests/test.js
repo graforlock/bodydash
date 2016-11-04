@@ -262,22 +262,22 @@ test('SEQUENCE', function (t)
     t.plan(2);
 
     var setup = {
-        appendString: function (v)
+        appendString: curry(function (s, v)
         {
-            return v + '-1';
-        },
-        prependString: function (v)
+            return v + s;
+        }),
+        prependString: curry(function (s, v)
         {
-            return '1-' + v;
-        }
+            return s + v;
+        })
     };
 
-    var seqT = Seq.of("Chained").take(5, setup.appendString),
+    var seqT = Seq.of("Chained").take(5, setup.appendString('-1')),
         seqT2 = Seq.of("Prepended").take(5);
 
     t.equal(seqT.__value(), "Chained-1-1-1-1-1",
         '| Seq.take(n, f) -> Successfully takes five values.');
-    t.equal(seqT2(setup.prependString).__value(), "1-1-1-1-1-Prepended",
+    t.equal(seqT2(setup.prependString('1-')).__value(), "1-1-1-1-1-Prepended",
         '| Seq.take(n)(f) -> Partially takes five values.');
 
     t.end();
