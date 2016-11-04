@@ -1,5 +1,6 @@
 module.exports = {
     array       : require('./array'),
+    collections : require('./collections'),
     container   : require('./container'),
     contracts   : require('./contracts'),
     curry       : require('./curry'),
