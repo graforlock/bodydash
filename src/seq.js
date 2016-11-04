@@ -1,10 +1,12 @@
 //--->>> Lazy Sequence
 var compose = require('./core').compose,
+    func = require('./contracts').func,
     curry = require('./curry');
 
-function Seq(v)
+function Seq(f)
 {
-    this.__value = v;
+    f = func(f);
+    this.__value = f;
     this.take = curry(function (num, f)
     {
         var list = [];
@@ -19,11 +21,11 @@ function Seq(v)
     }.bind(this));
 }
 
-Seq.of = function (v)
+Seq.of = function (f)
 {
     return new Seq(function ()
     {
-        return v;
+        return f;
     });
 };
 

@@ -1,11 +1,13 @@
 //-->>> I/O
 var compose = require('./core').compose,
+    func = require('./contracts').func,
     debug = require('./debug'),
     head = require('./array').head,
     each = require('./array').each;
 
 function IO(f)
 {
+    f = func(f);
     this.__value = f;
 }
 
@@ -58,16 +60,6 @@ IO.prototype.first = function ()
     return new IO(compose(head, this.__value));
 };
 
-
-IO.prototype.delay = function (time)
-{
-    f = this.__value;
-    setTimeout(function ()
-    {
-        return f();
-    }, time);
-};
-
 IO.prototype.output = function ()
 {
     return this.__value();
@@ -77,11 +69,6 @@ IO.prototype.output = function ()
 IO.prototype.chain = function (f)
 {
     return this.map(f).join();
-};
-
-IO.prototype.each = function (f)
-{
-    return new IO(each(f, this.__value()));
 };
 
 IO.prototype.ap = function (other)
