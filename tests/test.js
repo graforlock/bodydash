@@ -296,6 +296,7 @@ test('LIFT', function (t)
 {
     t.plan(4);
 
+    /* @Before */
     var setup = {
         functor: {
             A: IO,
@@ -316,6 +317,7 @@ test('LIFT', function (t)
         }
     };
 
+    /* @Tests */
     var liftA1T = lift.liftA1(setup.fn.plusplus,
             setup.functor.B.of(1)),
         liftA2T = lift.liftA2(setup.fn.add,
