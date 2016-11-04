@@ -228,6 +228,7 @@ test('EITHER', function (t)
 {
     t.plan(2);
 
+    /* @Before */
     var setup = {
         result: function (a, b)
         {
@@ -243,6 +244,7 @@ test('EITHER', function (t)
         }
     };
 
+    /* @Tests */
     var left = new Left([{id: 1}, {id: 2}]),
         right = new Right({status: 404}),
         eitherT = either(setup.resolve, setup.reject, left),
@@ -261,6 +263,7 @@ test('SEQUENCE', function (t)
 {
     t.plan(2);
 
+    /* @Before */
     var setup = {
         appendString: curry(function (s, v)
         {
@@ -272,6 +275,7 @@ test('SEQUENCE', function (t)
         })
     };
 
+    /* @Tests */
     var seqT = Seq.of("Chained").take(5, setup.appendString('-1')),
         seqT2 = Seq.of("Prepended").take(5);
 
