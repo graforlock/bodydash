@@ -396,16 +396,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	//-->>> Container
 	
-	function Container(x) {
+	function Container(x)
+	{
 	    this.__value = x;
 	}
 	
-	Container.of = function(x) {
+	Container.of = function (x)
+	{
 	    return new Container(x);
 	};
 	
-	Container.prototype.map = function(f) {
+	Container.prototype.map = function (f)
+	{
 	    return Container.of(f(this.__value));
+	};
+	
+	Container.prototype.ap = function (other)
+	{
+	    return other.map(this.__value);
 	};
 	
 	module.exports = Container;
@@ -719,6 +727,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var lift = {
 	
+	    liftA1: curry(function(f, functor)
+	    {
+	        return functor.map(f);
+	    }),
+	
 	    liftA2: curry(function (f, functor1, functor2)
 	    {
 	        return functor1.map(f).ap(functor2);
@@ -729,9 +742,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return functor1.map(f).ap(functor2).ap(functor3);
 	    }),
 	
-	    liftA4: curry(function (f, functor1, functor2, functor3)
+	    liftA4: curry(function (f, functor1, functor2, functor3, functor4)
 	    {
-	        return functor1.map(f).ap(functor2).ap(functor3);
+	        return functor1.map(f).ap(functor2).ap(functor3).ap(functor4);
 	    })
 	
 	};

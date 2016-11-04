@@ -6,10 +6,14 @@ var test = require('tape'),
     curry = b.curry,
     debug = b.debug,
     core = b.core,
+    Maybe = b.maybe,
     Left = b.left,
     Right = b.right,
+    IO = b.io,
     either = b.either,
-    Seq = b.seq;
+    Seq = b.seq,
+    lift = b.lift,
+    math = b.math;
 
 /* @Before All Tests */
 var gSetup = {
@@ -288,15 +292,55 @@ test('SEQUENCE', function (t)
 
 });
 
+test('LIFT', function (t)
+{
+    t.plan(4);
+
+    var setup = {
+        functor: {
+            A: IO,
+            B: Container,
+            C: Maybe
+        },
+        fn: {
+            plusplus: math.plusplus,
+            add: math.add,
+            addThree: curry(function addThree(a, b, c)
+            {
+                return a + b + c;
+            }),
+            addFour: curry(function addFour(a, b, c, d)
+            {
+                return a + b + c + d;
+            })
+        }
+    };
+
+    var liftA1T = lift.liftA1(setup.fn.plusplus,
+            setup.functor.B.of(1)),
+        liftA2T = lift.liftA2(setup.fn.add,
+            setup.functor.B.of(1), setup.functor.B.of(2)),
+        liftA3T = lift.liftA3(setup.fn.addThree,
+            setup.functor.A.of(1), setup.functor.A.of(2), setup.functor.A.of(3)),
+        liftA4T = lift.liftA4(setup.fn.addFour,
+            setup.functor.C.of(1), setup.functor.C.of(2),
+            setup.functor.C.of(3), setup.functor.C.of(4));
+
+    t.equal(liftA1T.__value, 2,
+        '| liftA1(f, F1) -> Correctly lifts one Applicative Functor.');
+    t.equal(liftA2T.__value, 3,
+        '| liftA2(f, F1, F2) -> Correctly lifts two Applicative Functors.');
+    t.equal(liftA3T.__value(), 6,
+        '| liftA3(f, F1, F2, F3) -> Correctly lifts three Applicative Functors.');
+    t.equal(liftA4T.__value, 10,
+        '| liftA3(f, F1, F2, F3, F4) -> Correctly lifts four Applicative Functors.');
+
+    t.end();
+});
+
 /* TODO:
 
  test('LENS', function(t)
- {
-
- });
-
-
- test('LIFT', function(t)
  {
 
  });
