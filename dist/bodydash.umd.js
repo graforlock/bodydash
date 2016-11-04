@@ -56,22 +56,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 	    array       : __webpack_require__(1),
-	    container   : __webpack_require__(8),
+	    container   : __webpack_require__(6),
 	    contracts   : __webpack_require__(4),
 	    curry       : __webpack_require__(2),
-	    debug       : __webpack_require__(9),
-	    either      : __webpack_require__(10),
-	    io          : __webpack_require__(13),
-	    left        : __webpack_require__(11),
-	    lens        : __webpack_require__(15),
-	    lift        : __webpack_require__(16),
-	    math        : __webpack_require__(17),
+	    debug       : __webpack_require__(7),
+	    either      : __webpack_require__(8),
+	    io          : __webpack_require__(11),
+	    left        : __webpack_require__(9),
+	    lens        : __webpack_require__(13),
+	    lift        : __webpack_require__(14),
+	    math        : __webpack_require__(15),
 	    maybe       : __webpack_require__(5),
 	    object      : __webpack_require__(3),
-	    right       : __webpack_require__(12),
-	    string      : __webpack_require__(18),
-	    seq         : __webpack_require__(19),
-	    core        : __webpack_require__(14)
+	    right       : __webpack_require__(10),
+	    string      : __webpack_require__(16),
+	    seq         : __webpack_require__(17),
+	    core        : __webpack_require__(12)
 	};
 
 /***/ },
@@ -347,9 +347,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Maybe
-	var curry = __webpack_require__(2),
-	    Just = __webpack_require__(6),
-	    None = __webpack_require__(7);
+	var curry = __webpack_require__(2);
 	
 	function Maybe(x)
 	{
@@ -358,8 +356,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	Maybe.maybe = curry(function (x, f, m)
 	{
-	    return m.isNone() ? x : f(m.__value);
-	    // Maybe helper for custom value (instead of 'null')
+	    return m.isNone() ? None.of(x) : Just.of(f(m.__value));
 	});
 	
 	Maybe.of = function (x)
@@ -369,22 +366,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	Maybe.prototype.isJust =function ()
 	{
-	    return this.__value.constructor === Just;
+	    return this.constructor === Just;
 	};
 	
 	Maybe.prototype.isNone = function ()
 	{
-	    return this.__value.constructor === None;
+	    return this.constructor === None;
 	};
 	
-	Maybe.prototype.nothingValue = function()
+	Maybe.prototype.isNothing = function()
 	{
 	    return (this.__value === null || this.__value === undefined || this.__value !== this.__value);
 	};
 	
 	Maybe.prototype.map = function (f)
 	{
-	    return this.nothingValue() ? None.of(null) : Just.of(f(this.__value));
+	    return this.isNothing() ? None.of(null) : Just.of(f(this.__value));
 	};
 	
 	Maybe.prototype.join = function ()
@@ -397,15 +394,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return other.map(this.__value);
 	    // Functor requirement: It maps (other Functor's map) over current Functor's __value.
 	};
-	
-	
-	module.exports = Maybe;
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Maybe = __webpack_require__(5);
 	
 	function Just(v)
 	{
@@ -421,14 +409,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	Just.prototype = Object.create(Maybe.prototype);
 	Just.prototype.constructor = Just;
 	
-	module.exports = Just;
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Maybe = __webpack_require__(5);
-	
 	function None(v)
 	{
 	    Maybe.call(this, v);
@@ -443,10 +423,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	None.prototype = Object.create(Maybe.prototype);
 	None.prototype.constructor = None;
 	
-	module.exports = None;
+	
+	module.exports = Maybe;
 
 /***/ },
-/* 8 */
+/* 6 */
 /***/ function(module, exports) {
 
 	//-->>> Container
@@ -475,7 +456,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Debug
@@ -489,13 +470,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = curry(debug);
 
 /***/ },
-/* 10 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//--->> Either
 	var curry = __webpack_require__(2),
-	    Left = __webpack_require__(11),
-	    Right = __webpack_require__(12);
+	    Left = __webpack_require__(9),
+	    Right = __webpack_require__(10);
 	
 	module.exports = curry(function(f /* identity in mose cases */, g, e) {
 	     switch (e.constructor) { 
@@ -505,7 +486,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 11 */
+/* 9 */
 /***/ function(module, exports) {
 
 	//--->> Left
@@ -525,7 +506,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Left;
 
 /***/ },
-/* 12 */
+/* 10 */
 /***/ function(module, exports) {
 
 	//--->> Right
@@ -546,13 +527,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> I/O
-	var compose = __webpack_require__(14).compose,
+	var compose = __webpack_require__(12).compose,
 	    func = __webpack_require__(4).func,
-	    debug = __webpack_require__(9),
+	    debug = __webpack_require__(7),
 	    head = __webpack_require__(1).head;
 	
 	function IO(f)
@@ -630,7 +611,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = IO;
 
 /***/ },
-/* 14 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> General Tools
@@ -724,7 +705,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 13 */
 /***/ function(module, exports) {
 
 	//-->>> Lenses
@@ -750,7 +731,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = lens;
 
 /***/ },
-/* 16 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Lift
@@ -783,7 +764,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = lift;
 
 /***/ },
-/* 17 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Math add-ons
@@ -842,7 +823,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 18 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> String add-ons
@@ -877,11 +858,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 19 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//--->>> Lazy Sequence
-	var compose = __webpack_require__(14).compose,
+	var compose = __webpack_require__(12).compose,
 	    func = __webpack_require__(4).func,
 	    curry = __webpack_require__(2);
 	

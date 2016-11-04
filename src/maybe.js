@@ -1,7 +1,5 @@
 //-->>> Maybe
-var curry = require('./curry'),
-    Just = require('./just'),
-    None = require('./none');
+var curry = require('./curry');
 
 function Maybe(x)
 {
@@ -35,7 +33,7 @@ Maybe.prototype.isNothing = function()
 
 Maybe.prototype.map = function (f)
 {
-    return this.isNothing ? None.of(null) : Just.of(f(this.__value));
+    return this.isNothing() ? None.of(null) : Just.of(f(this.__value));
 };
 
 Maybe.prototype.join = function ()
@@ -48,6 +46,34 @@ Maybe.prototype.ap = function (other)
     return other.map(this.__value);
     // Functor requirement: It maps (other Functor's map) over current Functor's __value.
 };
+
+function Just(v)
+{
+    Maybe.call(this, v);
+    this.__value = v;
+}
+
+Just.of = function (v)
+{
+    return new Just(v);
+};
+
+Just.prototype = Object.create(Maybe.prototype);
+Just.prototype.constructor = Just;
+
+function None(v)
+{
+    Maybe.call(this, v);
+    this.__value = v;
+}
+
+None.of = function(v)
+{
+    return new None(v);
+};
+
+None.prototype = Object.create(Maybe.prototype);
+None.prototype.constructor = None;
 
 
 module.exports = Maybe;
