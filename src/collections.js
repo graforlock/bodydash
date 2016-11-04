@@ -1,7 +1,6 @@
 function Set(arr)
 {
     this.set = [];
-
     this.add = function ()
     {
         if (arguments.length)
@@ -13,7 +12,6 @@ function Set(arr)
             {
                 temp[array[i]] = array[i];
             }
-
             for (var key in temp)
             {
                 if (this.set.indexOf(temp[key]) === -1)
@@ -21,9 +19,7 @@ function Set(arr)
             }
         }
     }.bind(this);
-
     this.add(arr);
-
     return this instanceof Set ? this : this.set;
 }
 
