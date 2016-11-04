@@ -340,6 +340,25 @@ test('LIFT', function (t)
     t.end();
 });
 
+test('MAYBE', function(t)
+{
+    t.plan(2);
+    /* @Setup */
+    // ...
+
+    /* @Tests */
+    var maybeT = Maybe.of(null).map(core.id),
+        maybeT2 = Maybe.of([1,2,3]).map(function(arr) {  return arr.concat(4)});
+
+    t.equal(maybeT.__value, null,
+        '| Maybe.of(x) -> Returns null.');
+    t.equal(gSetup.compare(maybeT2.__value, [ 1, 2, 3, 4 ]), true,
+        '| Maybe.of(x) -> Returns a valid mapping.');
+
+    t.end();
+
+});
+
 /* TODO:
 
  test('LENS', function(t)
@@ -352,7 +371,5 @@ test('LIFT', function (t)
 
  });
 
- test('MAYBE', function(t)
- {
 
- }); */
+ */
