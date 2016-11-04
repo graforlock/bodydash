@@ -17,9 +17,9 @@ var core = {
     compose: function ()
     {
         var funcs = contracts.arrayOf(contracts.func)([].slice.call(arguments));
-        return function(arg)
+        return function (arg)
         {
-            return funcs.reverse().reduce(function(a, b)
+            return funcs.reverse().reduce(function (a, b)
             {
                 return b(a);
             }, arg);
@@ -39,16 +39,10 @@ var core = {
         });
     },
 
-    flip: function (fn)
+    flip: curry(function (fn, first, second)
     {
-        return function (first)
-        {
-            return function (second)
-            {
-                return fn.call(this, second, first);
-            };
-        };
-    },
+        return fn.call(this, second, first);
+    }),
 
     flipMany: function (fn)
     {
