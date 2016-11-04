@@ -319,7 +319,7 @@ test('LIFT', function (t)
 
     /* @Tests */
     var liftA1T = lift.liftA1(setup.fn.plusplus,
-            setup.functor.B.of(1)),
+        setup.functor.B.of(1)),
         liftA2T = lift.liftA2(setup.fn.add,
             setup.functor.B.of(1), setup.functor.B.of(2)),
         liftA3T = lift.liftA3(setup.fn.addThree,
@@ -340,19 +340,25 @@ test('LIFT', function (t)
     t.end();
 });
 
-test('MAYBE', function(t)
+test('MAYBE', function (t)
 {
     t.plan(2);
     /* @Setup */
-    // ...
+    var setup = {
+        arr: [1, 2, 3],
+        res: 10
+    };
 
     /* @Tests */
     var maybeT = Maybe.of(null).map(core.id),
-        maybeT2 = Maybe.of([1,2,3]).map(function(arr) {  return arr.concat(4)});
+        maybeT2 = Maybe.of(setup.arr).map(function (arr)
+        {
+            return arr.concat(4)
+        });
 
     t.equal(maybeT.__value, null,
         '| Maybe.of(x) -> Returns null.');
-    t.equal(gSetup.compare(maybeT2.__value, [ 1, 2, 3, 4 ]), true,
+    t.equal(array.reduce(math.add, maybeT2.__value), setup.res,
         '| Maybe.of(x) -> Returns a valid mapping.');
 
     t.end();
