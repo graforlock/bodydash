@@ -2,8 +2,7 @@
 var compose = require('./core').compose,
     func = require('./contracts').func,
     debug = require('./debug'),
-    head = require('./array').head,
-    each = require('./array').each;
+    head = require('./array').head;
 
 function IO(f)
 {

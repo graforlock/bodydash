@@ -495,12 +495,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	//-->>> I/O
 	var compose = __webpack_require__(12).compose,
+	    func = __webpack_require__(4).func,
 	    debug = __webpack_require__(7),
-	    head = __webpack_require__(1).head,
-	    each = __webpack_require__(1).each;
+	    head = __webpack_require__(1).head;
 	
 	function IO(f)
 	{
+	    f = func(f);
 	    this.__value = f;
 	}
 	
@@ -553,16 +554,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new IO(compose(head, this.__value));
 	};
 	
-	
-	IO.prototype.delay = function (time)
-	{
-	    f = this.__value;
-	    setTimeout(function ()
-	    {
-	        return f();
-	    }, time);
-	};
-	
 	IO.prototype.output = function ()
 	{
 	    return this.__value();
@@ -572,11 +563,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	IO.prototype.chain = function (f)
 	{
 	    return this.map(f).join();
-	};
-	
-	IO.prototype.each = function (f)
-	{
-	    return new IO(each(f, this.__value()));
 	};
 	
 	IO.prototype.ap = function (other)
@@ -850,11 +836,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	//--->>> Lazy Sequence
 	var compose = __webpack_require__(12).compose,
+	    func = __webpack_require__(4).func,
 	    curry = __webpack_require__(2);
 	
-	function Seq(v)
+	function Seq(f)
 	{
-	    this.__value = v;
+	    f = func(f);
+	    this.__value = f;
 	    this.take = curry(function (num, f)
 	    {
 	        var list = [];
@@ -869,11 +857,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }.bind(this));
 	}
 	
-	Seq.of = function (v)
+	Seq.of = function (f)
 	{
 	    return new Seq(function ()
 	    {
-	        return v;
+	        return f;
 	    });
 	};
 	
