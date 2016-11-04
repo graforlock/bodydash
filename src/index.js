@@ -15,6 +15,5 @@ module.exports = {
     right       : require('./right'),
     string      : require('./string'),
     seq         : require('./seq'),
-    take        : require('./take'),
     core        : require('./core')
 };

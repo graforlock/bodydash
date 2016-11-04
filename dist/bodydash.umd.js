@@ -71,7 +71,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    right       : __webpack_require__(10),
 	    string      : __webpack_require__(16),
 	    seq         : __webpack_require__(17),
-	    take        : __webpack_require__(18),
 	    core        : __webpack_require__(12)
 	};
 
@@ -889,42 +888,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	module.exports = Seq;
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	//-->>> Lazy add-ons
-	var num = __webpack_require__(4).num,
-	    curry = __webpack_require__(2);
-	
-	var lazy = {
-	
-	    take: curry(function(n, xs)
-	    {
-	        n = num(n);
-	        return xs.filter(function (e, i)
-	        {
-	            return i < n;
-	        })
-	    }),
-	
-	    skip: curry(function(n, xs)
-	    {
-	        n = num(n);
-	        return xs.filter(function (e, i)
-	        {
-	            return i > n
-	        });
-	    })
-	
-	};
-	
-	module.exports = lazy;
-	
-	
-	
-
 
 /***/ }
 /******/ ])
