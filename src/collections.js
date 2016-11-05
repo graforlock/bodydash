@@ -20,8 +20,13 @@ function Set(arr)
                     this.set.push(temp[key]);
             }
         }
-        return this instanceof Set ? this : this.set;
+        this.isClass();
     }.bind(this);
+
+    this.isClass = function()
+    {
+        return this instanceof Set ? this : this.set;
+    };
 
     this.add(arr);
 }

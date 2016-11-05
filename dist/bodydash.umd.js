@@ -63,18 +63,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    curry       : __webpack_require__(2),
 	    debug       : __webpack_require__(10),
 	    either      : __webpack_require__(11),
-	    io          : __webpack_require__(14),
+	    identity    : __webpack_require__(14),
+	    io          : __webpack_require__(15),
 	    left        : __webpack_require__(12),
-	    lens        : __webpack_require__(16),
-	    lift        : __webpack_require__(17),
-	    math        : __webpack_require__(18),
+	    lens        : __webpack_require__(17),
+	    lift        : __webpack_require__(18),
+	    math        : __webpack_require__(19),
 	    maybe       : __webpack_require__(6),
 	    object      : __webpack_require__(4),
 	    pointfree   : __webpack_require__(3),
 	    right       : __webpack_require__(13),
-	    string      : __webpack_require__(19),
-	    seq         : __webpack_require__(20),
-	    core        : __webpack_require__(15)
+	    string      : __webpack_require__(20),
+	    seq         : __webpack_require__(21),
+	    core        : __webpack_require__(16)
 	};
 
 /***/ },
@@ -636,10 +637,41 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 14 */
+/***/ function(module, exports) {
+
+	function Identity(v)
+	{
+	    this.__value = v;
+	}
+	
+	Identity.of = function (v)
+	{
+	    return new Identity(v);
+	};
+	
+	Identity.prototype.map = function (f)
+	{
+	    return new Identity(f(this.__value));
+	};
+	
+	Identity.prototype.ap = function (other)
+	{
+	    return other.map(this.__value);
+	};
+	
+	Identity.prototype.join = function()
+	{
+	  return this.__value;
+	};
+	
+	module.exports = Identity;
+
+/***/ },
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> I/O
-	var compose = __webpack_require__(15).compose,
+	var compose = __webpack_require__(16).compose,
 	    func = __webpack_require__(5).func,
 	    debug = __webpack_require__(10),
 	    head = __webpack_require__(1).head;
@@ -708,7 +740,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = IO;
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> General Tools
@@ -797,7 +829,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	//-->>> Lenses
@@ -823,7 +855,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = lens;
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Lift
@@ -856,7 +888,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = lift;
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Math add-ons
@@ -915,7 +947,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> String add-ons
@@ -950,11 +982,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//--->>> Lazy Sequence
-	var compose = __webpack_require__(15).compose,
+	var compose = __webpack_require__(16).compose,
 	    func = __webpack_require__(5).func,
 	    curry = __webpack_require__(2);
 	

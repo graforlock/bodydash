@@ -7,6 +7,7 @@ module.exports = {
     curry       : require('./curry'),
     debug       : require('./debug'),
     either      : require('./either'),
+    identity    : require('./identity'),
     io          : require('./io'),
     left        : require('./left'),
     lens        : require('./lens'),

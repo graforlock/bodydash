@@ -13,9 +13,25 @@ function lens(set, get)
     };
     f.modify = function (func, a)
     {
-        return set(a, f(get(a)));
+        return set(a, get(a));
     };
     return f;
 }
+
+function Lens()
+{
+
+}
+
+/*
+function get (f, x)
+{
+    return compose(Identity.of, chain(f), Constant)(x);
+}
+
+function set(f, x)
+{
+    return compose(Identity.of, chain(f), Identity.of)(x);
+} */
 
 module.exports = lens;
