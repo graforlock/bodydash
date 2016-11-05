@@ -1,13 +1,11 @@
 //--->>> Arrays
 var curry = require('./curry'),
+    map = require('./pointfree').map,
     safeProp = require('./object').safeProp;
 
 var array = {
 
-    map: curry(function (f, xs)
-    {
-        return xs.map(f);
-    }),
+    map: map,
 
     filter: curry(function (f, xs)
     {
