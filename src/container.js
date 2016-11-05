@@ -20,4 +20,10 @@ Container.prototype.ap = function (other)
     return other.map(this.__value);
 };
 
+Container.prototype.join = function()
+{
+    return this.__value;
+}
+
+
 module.exports = Container;

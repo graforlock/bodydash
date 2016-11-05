@@ -1,6 +1,7 @@
 function Set(arr)
 {
     this.set = [];
+
     this.add = function ()
     {
         if (arguments.length)
@@ -12,15 +13,17 @@ function Set(arr)
             {
                 temp[array[i]] = array[i];
             }
+
             for (var key in temp)
             {
                 if (this.set.indexOf(temp[key]) === -1)
                     this.set.push(temp[key]);
             }
         }
+        return this instanceof Set ? this : this.set;
     }.bind(this);
+
     this.add(arr);
-    return this instanceof Set ? this : this.set;
 }
 
 Set.prototype.toMap = function ()

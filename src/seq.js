@@ -39,4 +39,9 @@ Seq.prototype.ap = function (other)
     return other.map(this.__value());
 };
 
+Seq.prototype.join = function()
+{
+    return this.__value();
+};
+
 module.exports = Seq;

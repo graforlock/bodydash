@@ -25,16 +25,11 @@ IO.prototype.map = function (f)
 
 IO.prototype.emap = function (f)
 {
-    /* 'f' needs to be curried
-       var value = this.__value; <- value to pass over?
-     */
     return this.chain(function (e)
     {
-        return new IO(compose(e.__value, f));
-        // it will lose I/O; has to be some means to prevent it
+        return new IO(compose(e, f));
     });
 };
-
 
 IO.prototype.join = function ()
 {
@@ -58,12 +53,6 @@ IO.prototype.first = function ()
 {
     return new IO(compose(head, this.__value));
 };
-
-IO.prototype.output = function ()
-{
-    return this.__value();
-};
-
 
 IO.prototype.chain = function (f)
 {

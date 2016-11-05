@@ -1,6 +1,7 @@
 module.exports = {
     array       : require('./array'),
     collections : require('./collections'),
+    combinators : require('./combinators'),
     container   : require('./container'),
     contracts   : require('./contracts'),
     curry       : require('./curry'),
@@ -13,6 +14,7 @@ module.exports = {
     math        : require('./math'),
     maybe       : require('./maybe'),
     object      : require('./object'),
+    pointfree   : require('./pointfree'),
     right       : require('./right'),
     string      : require('./string'),
     seq         : require('./seq'),

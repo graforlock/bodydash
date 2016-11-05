@@ -56,22 +56,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 	    array       : __webpack_require__(1),
-	    container   : __webpack_require__(6),
+	    collections : __webpack_require__(6),
+	    combinators : __webpack_require__(7),
+	    container   : __webpack_require__(8),
 	    contracts   : __webpack_require__(4),
 	    curry       : __webpack_require__(2),
-	    debug       : __webpack_require__(7),
-	    either      : __webpack_require__(8),
-	    io          : __webpack_require__(11),
-	    left        : __webpack_require__(9),
-	    lens        : __webpack_require__(13),
-	    lift        : __webpack_require__(14),
-	    math        : __webpack_require__(15),
+	    debug       : __webpack_require__(9),
+	    either      : __webpack_require__(10),
+	    io          : __webpack_require__(13),
+	    left        : __webpack_require__(11),
+	    lens        : __webpack_require__(15),
+	    lift        : __webpack_require__(16),
+	    math        : __webpack_require__(17),
 	    maybe       : __webpack_require__(5),
 	    object      : __webpack_require__(3),
-	    right       : __webpack_require__(10),
-	    string      : __webpack_require__(16),
-	    seq         : __webpack_require__(17),
-	    core        : __webpack_require__(12)
+	    pointfree   : __webpack_require__(18),
+	    right       : __webpack_require__(12),
+	    string      : __webpack_require__(19),
+	    seq         : __webpack_require__(20),
+	    core        : __webpack_require__(14)
 	};
 
 /***/ },
@@ -430,6 +433,80 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 6 */
 /***/ function(module, exports) {
 
+	function Set(arr)
+	{
+	    this.set = [];
+	
+	    this.add = function ()
+	    {
+	        if (arguments.length)
+	        {
+	            var array = [].slice.call(arguments)[0],
+	                temp = {};
+	
+	            for (var i = 0; i < array.length; i++)
+	            {
+	                temp[array[i]] = array[i];
+	            }
+	
+	            for (var key in temp)
+	            {
+	                if (this.set.indexOf(temp[key]) === -1)
+	                    this.set.push(temp[key]);
+	            }
+	        }
+	        return this instanceof Set ? this : this.set;
+	    }.bind(this);
+	
+	    this.add(arr);
+	}
+	
+	Set.prototype.toMap = function ()
+	{
+	    this.set = this.set.reduce(function (a, b)
+	    {
+	        a[b] = b;
+	        return a;
+	    }, {});
+	    return this.set;
+	};
+	
+	module.exports = {
+	    Set: Set
+	};
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	var combinators = {
+	
+	    K: function (a)
+	    {
+	        return function ()
+	        {
+	            return a;
+	        }
+	    },
+	
+	    S: function (a, b, c)
+	    {
+	        return a(c)(b(c))
+	    },
+	
+	    I: function (a)
+	    {
+	        return a;
+	    }
+	
+	};
+	
+	module.exports = combinators;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
 	//-->>> Container
 	
 	function Container(x)
@@ -452,11 +529,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return other.map(this.__value);
 	};
 	
+	Container.prototype.join = function()
+	{
+	    return this.__value;
+	}
+	
+	
 	module.exports = Container;
 
 
 /***/ },
-/* 7 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Debug
@@ -470,13 +553,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = curry(debug);
 
 /***/ },
-/* 8 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//--->> Either
 	var curry = __webpack_require__(2),
-	    Left = __webpack_require__(9),
-	    Right = __webpack_require__(10);
+	    Left = __webpack_require__(11),
+	    Right = __webpack_require__(12);
 	
 	module.exports = curry(function(f /* identity in mose cases */, g, e) {
 	     switch (e.constructor) { 
@@ -486,7 +569,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-/* 9 */
+/* 11 */
 /***/ function(module, exports) {
 
 	//--->> Left
@@ -506,7 +589,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Left;
 
 /***/ },
-/* 10 */
+/* 12 */
 /***/ function(module, exports) {
 
 	//--->> Right
@@ -527,13 +610,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> I/O
-	var compose = __webpack_require__(12).compose,
+	var compose = __webpack_require__(14).compose,
 	    func = __webpack_require__(4).func,
-	    debug = __webpack_require__(7),
+	    debug = __webpack_require__(9),
 	    head = __webpack_require__(1).head;
 	
 	function IO(f)
@@ -557,16 +640,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	IO.prototype.emap = function (f)
 	{
-	    /* 'f' needs to be curried
-	       var value = this.__value; <- value to pass over?
-	     */
 	    return this.chain(function (e)
 	    {
-	        return new IO(compose(e.__value, f));
-	        // it will lose I/O; has to be some means to prevent it
+	        return new IO(compose(e, f));
 	    });
 	};
-	
 	
 	IO.prototype.join = function ()
 	{
@@ -591,12 +669,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new IO(compose(head, this.__value));
 	};
 	
-	IO.prototype.output = function ()
-	{
-	    return this.__value();
-	};
-	
-	
 	IO.prototype.chain = function (f)
 	{
 	    return this.map(f).join();
@@ -611,7 +683,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = IO;
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> General Tools
@@ -673,11 +745,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        };
 	    },
 	
-	    id: function (x)
-	    {
-	        return x;
-	    },
-	
 	    join: function (monad)
 	    {
 	        return monad.join();
@@ -705,7 +772,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports) {
 
 	//-->>> Lenses
@@ -731,7 +798,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = lens;
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Lift
@@ -764,7 +831,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = lift;
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Math add-ons
@@ -823,7 +890,34 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 16 */
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var curry = __webpack_require__(2);
+	
+	var pointfree = {
+	
+	    map: curry(function (f, functor)
+	    {
+	        return functor.map(f);
+	    }),
+	
+	    ap: curry(function (functor1, functor2)
+	    {
+	        return functor1.map(functor2.join());
+	    }),
+	
+	    chain: curry(function(f, functor)
+	    {
+	        return functor.map(f).join();
+	    })
+	
+	};
+	
+	module.exports = pointfree;
+
+/***/ },
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//-->>> String add-ons
@@ -858,11 +952,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	//--->>> Lazy Sequence
-	var compose = __webpack_require__(12).compose,
+	var compose = __webpack_require__(14).compose,
 	    func = __webpack_require__(4).func,
 	    curry = __webpack_require__(2);
 	
@@ -900,6 +994,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	Seq.prototype.ap = function (other)
 	{
 	    return other.map(this.__value());
+	};
+	
+	Seq.prototype.join = function()
+	{
+	    return this.__value();
 	};
 	
 	module.exports = Seq;

@@ -3,6 +3,7 @@ var test = require('tape'),
     array = b.array,
     Container = b.container,
     contracts = b.contracts,
+    combinators = b.combinators,
     curry = b.curry,
     debug = b.debug,
     core = b.core,
@@ -350,7 +351,7 @@ test('MAYBE', function (t)
     };
 
     /* @Tests */
-    var maybeT = Maybe.of(null).map(core.id),
+    var maybeT = Maybe.of(null).map(combinators.I),
         maybeT2 = Maybe.of(setup.arr).map(function (arr)
         {
             return arr.concat(4)
