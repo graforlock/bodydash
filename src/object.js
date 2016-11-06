@@ -5,7 +5,7 @@ var contracts = require('./contracts'),
 
 var object = {
 
-    extend: function (destination, source)
+    extend: function extend(destination, source)
     {
         for (var property in source)
         {
