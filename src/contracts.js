@@ -34,10 +34,30 @@ var contracts = {
         }
     },
 
+    unionOf: function(t)
+    {
+        t = contracts.strArr(t);
+        return function(a)
+        {
+            for(var i = 0; i < t.length; i++)
+            {
+                if({}.toString.call(a) === '[object ' + t[i] + ']')
+                {
+                    return a;
+                }
+            }
+            throw new TypeError('Error: Input excepts union of ' + t.join("|") );
+        }
+    },
+
+    AOUnion: function(ao)
+    {
+        return contracts.unionOf(['Array', 'Object'])(ao);
+    },
+
     obj: function (o)
     {
         return contracts.classOf('Object')(o);
-
     },
 
     arr: function (a)

@@ -1,37 +1,46 @@
 //-->>> Lenses
 var Identity = require('./identity'),
-    Constant = require('./constant'),
+    AOUnion = require('./contracts').AOUnion,
     compose = require('./core').compose,
-    mergeObj = require('./object').mergeObj,
-    extendObj = require('./object').extendObj,
-    curry = require('./curry'),
-    chain = require('./pointfree').chain;
+    extend = require('./object').extendTwo,
+    curry = require('./curry');
 
-// function lensAdapter(x, key)
-// {
-//      return compose(extendMany(x /*, partial for y */), x[key]);
-// }
 
 var Lens = curry(function Lens(key, f, x)
 {
-    var copy = extendObj(x);
-        copy[key] = f;
-    // return compose(mergeObj(x,copy));
-    return compose(mergeObj(x), f)(x[key]);
+    return compose(extend(x), f(key), extend({}))(x);
 });
 
-var get = curry(function get(f, x)
+function lensAdapter(x)
 {
-    // return compose(Identity.of, chain(f), Constant)(x[f]);
-    return compose(Identity.of, chain(f), Constant)(x);
-});
+    x = AOUnion(x);
+    if ({}.toString.call(x) === '[object Object]')
+    {
+        return extend(x);
+    }
+    else
+    {
+        return x;
+    }
+}
 
-var set = curry(function set(l, f, x)
+var _pass = curry(function get(key, obj)
 {
-    return compose(Identity.of, chain(l(f)), Identity.of)(x);
+    var object = obj;
+    if (obj[key])
+    object[key] = obj[key];
+    return object;
 });
 
-set(Lens("name"), "ERIK", { name: "Erik" });
+var get = function (lens, x)
+{
+    return compose(Identity.of, lens(_pass))(x);
+};
+
+var set = function (lens, f, x)
+{
+    return compose(Identity.of, lens(f))(x);
+};
 
 
-module.exports = {get: get, set: set};
+module.exports = {get: get, set: set, Lens: Lens};

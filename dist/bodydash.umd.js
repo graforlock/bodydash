@@ -193,8 +193,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var object = {
 	
-	    extend: function (destination, source)
+	    extend: function extend(destination, source)
 	    {
+	        destination = contracts.obj(destination),
+	        source = contracts.obj(source);
+	
 	        for (var property in source)
 	        {
 	            if (source[property] && source[property].constructor &&
@@ -210,32 +213,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return destination;
 	    },
 	
-	    extendData: function (target, data)
+	    extendTwo: curry(function (a, b)
 	    {
-	        return object.extendObj(target, data);
-	    },
+	        a = contracts.obj(a),
+	        b = contracts.obj(b);
+	        return [a, b].reduce(function (a, b)
+	        {
 	
-	    extendObj: function (destination, source)
-	    {
-	        return object.extend(contracts.obj(destination), contracts.obj(source));
-	    },
+	            for (var key in b)
+	            {
+	                a[key] = b[key];
+	            }
+	            return a;
+	        }, {});
+	    }),
 	
-	    mergeObj: function (toExtend)
+	    extendMany: function (toExtend)
 	    {
 	        return contracts.objArr(toExtend)
 	            .map(function (e)
 	            {
-	                return object.extendObj({}, e)
+	                return object.extend({}, e)
 	            })
 	            .reduce(function (a, b)
 	            {
-	                return object.extendObj(a, b)
+	                return object.extend(a, b)
 	            });
 	    },
 	
 	    newObj: function ()
 	    {
-	        return object.extendObj({}, {});
+	        return object.extend({}, {});
 	    },
 	
 	    immutable: function (o)
@@ -314,10 +322,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    },
 	
+	    unionOf: function(t)
+	    {
+	        t = contracts.strArr(t);
+	        return function(a)
+	        {
+	            for(var i = 0; i < t.length; i++)
+	            {
+	                if({}.toString.call(a) === '[object ' + t[i] + ']')
+	                {
+	                    return a;
+	                }
+	            }
+	            throw new TypeError('Error: Input excepts union of ' + t.join("|") );
+	        }
+	    },
+	
+	    AOUnion: function(ao)
+	    {
+	        return contracts.unionOf(['Array', 'Object'])(ao);
+	    },
+	
 	    obj: function (o)
 	    {
 	        return contracts.classOf('Object')(o);
-	
 	    },
 	
 	    arr: function (a)
@@ -481,8 +509,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    this.set.push(temp[key]);
 	            }
 	        }
-	        return this instanceof Set ? this : this.set;
+	        this.isClass();
 	    }.bind(this);
+	
+	    this.isClass = function()
+	    {
+	        return this instanceof Set ? this : this.set;
+	    };
 	
 	    this.add(arr);
 	}
@@ -830,29 +863,50 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 17 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	//-->>> Lenses
+	var Identity = __webpack_require__(14),
+	    AOUnion = __webpack_require__(5).AOUnion,
+	    compose = __webpack_require__(16).compose,
+	    extend = __webpack_require__(4).extendTwo,
+	    curry = __webpack_require__(2);
 	
-	function lens(set, get)
+	
+	var Lens = curry(function Lens(key, f, x)
 	{
-	    var f = function (a)
+	    return compose(extend(x), f(key), extend({}))(x);
+	});
+	
+	function lensAdapter(x)
+	{
+	    x = AOUnion(x);
+	    if({}.toString.call(x) === '[object Object]')
 	    {
-	        return get(a);
-	    };
-	    f.set = set;
-	    f.get = function (a)
-	    {
-	        return get(a);
-	    };
-	    f.modify = function (func, a)
-	    {
-	        return set(a, f(get(a)));
-	    };
-	    return f;
+	        return extend(x);
+	    }
+	    else {
+	        return x;
+	    }
 	}
 	
-	module.exports = lens;
+	var _get = curry(function get(key, obj)
+	{
+	    var object = obj;
+	    object[key] = obj[key];
+	    return object;
+	});
+	
+	var get = function(lens, x) {
+	    return compose(Identity.of, lens(_get))(x);
+	};
+	
+	var set = function(lens, f, x) {
+	    return compose(Identity.of, lens(f))(x);
+	};
+	
+	
+	module.exports = {get: get, set: set, Lens: Lens};
 
 /***/ },
 /* 18 */

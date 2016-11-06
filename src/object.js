@@ -7,6 +7,9 @@ var object = {
 
     extend: function extend(destination, source)
     {
+        destination = contracts.obj(destination),
+        source = contracts.obj(source);
+
         for (var property in source)
         {
             if (source[property] && source[property].constructor &&
@@ -22,32 +25,37 @@ var object = {
         return destination;
     },
 
-    extendData: function (target, data)
+    extendTwo: curry(function (a, b)
     {
-        return object.extendObj(target, data);
-    },
+        a = contracts.obj(a),
+        b = contracts.obj(b);
+        return [a, b].reduce(function (a, b)
+        {
 
-    extendObj: function (destination, source)
-    {
-        return object.extend(contracts.obj(destination), contracts.obj(source));
-    },
+            for (var key in b)
+            {
+                a[key] = b[key];
+            }
+            return a;
+        }, {});
+    }),
 
-    mergeObj: function (toExtend)
+    extendMany: function (toExtend)
     {
         return contracts.objArr(toExtend)
             .map(function (e)
             {
-                return object.extendObj({}, e)
+                return object.extend({}, e)
             })
             .reduce(function (a, b)
             {
-                return object.extendObj(a, b)
+                return object.extend(a, b)
             });
     },
 
     newObj: function ()
     {
-        return object.extendObj({}, {});
+        return object.extend({}, {});
     },
 
     immutable: function (o)
