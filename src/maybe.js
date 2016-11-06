@@ -47,6 +47,11 @@ Maybe.prototype.ap = function (other)
     // Functor requirement: It maps (other Functor's map) over current Functor's __value.
 };
 
+Maybe.prototype.chain = function (f)
+{
+    return this.map(f).join();
+};
+
 function Just(v)
 {
     Maybe.call(this, v);

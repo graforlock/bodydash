@@ -23,7 +23,7 @@ Container.prototype.ap = function (other)
 Container.prototype.join = function()
 {
     return this.__value;
-}
+};
 
 
 module.exports = Container;

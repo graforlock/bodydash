@@ -1,5 +1,8 @@
 //-->>> Lenses
 var Identity = require('./identity'),
+    Left = require('./left'),
+    Right = require('./right'),
+    Maybe = require('./maybe'),
     AOUnion = require('./contracts').AOUnion,
     compose = require('./core').compose,
     extend = require('./object').extendTwo,
@@ -26,10 +29,13 @@ function lensAdapter(x)
 
 var _pass = curry(function get(key, obj)
 {
-    var object = obj;
-    if (obj[key])
-    object[key] = obj[key];
-    return object;
+    var Either = Maybe.of(obj[key]).isNone() ? Left.of(obj) : Right.of(obj);
+    Either.map(function (o)
+    {
+        o[key] = obj[key];
+        return o;
+    });
+    return Either.__value;
 });
 
 var get = function (lens, x)
