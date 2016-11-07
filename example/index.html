@@ -16,14 +16,13 @@
     set = bodydash.lens.set;
     get = bodydash.lens.get;
 
-    setIt = curry(function (val, key, obj)
-    {
-        obj[key] = val;
-        return obj;
-    });
-
+    /* ---- Lenses over Array ---- */
     console.log(get(Lens(0), [1,2,3]));
-    console.log(set(Lens(0), setIt("DEAD"),[1,2,3]));
+    console.log(set(Lens(0), "DEAD",[1,2,3]));
+    /* ---- Lenses over Object ---- */
+    console.log(get(Lens("name"), {name: "Pigsy", surname: "Blonde"}));
+    console.log(set(Lens("name"), "DEAD", {name: "Pigsy", surname: "Blonde"}));
+
 </script>
 </body>
 </html>

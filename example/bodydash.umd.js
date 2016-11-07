@@ -915,7 +915,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 	
-	var _pass = curry(function (key, obj)
+	var _getter = curry(function (key, obj)
 	{
 	    var Either = Maybe.of(obj[key]).map(Id).isNone() ? Left.of("No such key.") : Right.of(obj);
 	    return Either.map(function (o)
@@ -926,14 +926,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }).__value;
 	});
 	
+	var _setter = curry(function (val, key, obj)
+	{
+	    obj[key] = val;
+	    return obj;
+	
+	});
+	
 	var get = function (lens, x)
 	{
-	    return compose(Identity.of, lens(_pass))(x);
+	    return compose(Identity.of, lens(_getter))(x);
 	};
 	
-	var set = function (lens, f, x)
+	var set = function (lens, rep, x)
 	{
-	    return compose(Identity.of, lens(f))(x);
+	    return compose(Identity.of, lens(_setter(rep)))(x);
 	};
 	
 	module.exports = {get: get, set: set, Lens: Lens};
