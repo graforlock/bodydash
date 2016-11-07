@@ -55,6 +55,11 @@ var contracts = {
         return contracts.unionOf(['Array', 'Object'])(ao);
     },
 
+    SNUnion: function(sn)
+    {
+        return contracts.unionOf(['String', 'Number'])(sn);
+    },
+
     obj: function (o)
     {
         return contracts.classOf('Object')(o);

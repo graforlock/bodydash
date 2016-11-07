@@ -121,7 +121,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }),
 	
-	    slice: [].slice
+	    slice: [].slice,
+	
+	    cloneArray: function(arr)
+	    {
+	        return JSON.parse(JSON.stringify(arr));
+	    }
 	
 	};
 	
@@ -888,6 +893,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    SNUnion = __webpack_require__(5).SNUnion,
 	    compose = __webpack_require__(16).compose,
 	    extend = __webpack_require__(4).extendTwo,
+	    cloneArray = __webpack_require__(1).cloneArray,
 	    curry = __webpack_require__(2);
 	
 	
@@ -905,7 +911,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        case '[object Object]':
 	            return extend({}, x);
 	        case '[object Array]' :
-	            return x;
+	            return cloneArray(x);
 	    }
 	}
 	

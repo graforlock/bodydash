@@ -14,7 +14,7 @@ var config = {
 
 
 var out,
-    outfile = { dev: './dist', prod: './example' };
+    outfile = { prod: './dist', dev: './example' };
 
 if (argv.build === "prod")
 {

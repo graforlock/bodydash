@@ -37,7 +37,12 @@ var array = {
         }
     }),
 
-    slice: [].slice
+    slice: [].slice,
+
+    cloneArray: function(arr)
+    {
+        return JSON.parse(JSON.stringify(arr));
+    }
 
 };
 

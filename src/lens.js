@@ -3,17 +3,19 @@ var Identity = require('./identity'),
     Left = require('./left'),
     Right = require('./right'),
     Maybe = require('./maybe'),
-    debug =  require('./debug'),
     Id = require('./combinators').I,
     AOUnion = require('./contracts').AOUnion,
+    SNUnion = require('./contracts').SNUnion,
     compose = require('./core').compose,
     extend = require('./object').extendTwo,
+    cloneArray = require('./array').cloneArray,
     curry = require('./curry');
 
 
 var Lens = curry(function Lens(key, f, x)
 {
-    return compose(f(key), lensAdapter({}))(x);
+    key = SNUnion(key);
+    return compose(f(key), lensAdapter)(x);
 });
 
 function lensAdapter(x)
@@ -22,9 +24,9 @@ function lensAdapter(x)
     switch ({}.toString.call(x))
     {
         case '[object Object]':
-            return extend(x);
+            return extend({}, x);
         case '[object Array]' :
-            return x;
+            return cloneArray(x);
     }
 }
 
