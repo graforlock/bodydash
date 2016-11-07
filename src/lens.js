@@ -3,6 +3,8 @@ var Identity = require('./identity'),
     Left = require('./left'),
     Right = require('./right'),
     Maybe = require('./maybe'),
+    debug =  require('./debug'),
+    Id = require('./combinators').I,
     AOUnion = require('./contracts').AOUnion,
     compose = require('./core').compose,
     extend = require('./object').extendTwo,
@@ -11,31 +13,30 @@ var Identity = require('./identity'),
 
 var Lens = curry(function Lens(key, f, x)
 {
-    return compose(extend(x), f(key), extend({}))(x);
+    return compose(f(key), lensAdapter({}))(x);
 });
 
 function lensAdapter(x)
 {
     x = AOUnion(x);
-    if ({}.toString.call(x) === '[object Object]')
+    switch ({}.toString.call(x))
     {
-        return extend(x);
-    }
-    else
-    {
-        return x;
+        case '[object Object]':
+            return extend(x);
+        case '[object Array]' :
+            return x;
     }
 }
 
-var _pass = curry(function get(key, obj)
+var _pass = curry(function (key, obj)
 {
-    var Either = Maybe.of(obj[key]).isNone() ? Left.of(obj) : Right.of(obj);
-    Either.map(function (o)
+    var Either = Maybe.of(obj[key]).map(Id).isNone() ? Left.of("No such key.") : Right.of(obj);
+    return Either.map(function (o)
     {
-        o[key] = obj[key];
-        return o;
-    });
-    return Either.__value;
+        var next = {};
+        next[key] = o[key];
+        return next;
+    }).__value;
 });
 
 var get = function (lens, x)
@@ -47,6 +48,5 @@ var set = function (lens, f, x)
 {
     return compose(Identity.of, lens(f))(x);
 };
-
 
 module.exports = {get: get, set: set, Lens: Lens};

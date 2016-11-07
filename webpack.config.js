@@ -1,22 +1,40 @@
 var webpack = require('webpack');
 var path = require('path');
+var argv = require('yargs').argv;
 var UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
-
+var BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
 var config = {
-    name : 'bodydash',
-    src : './src',
-    dist : './dist',
-    mainEntry : './src/index.js',
-    plugins : []
+    name: 'bodydash',
+    src: './src',
+    out: '',
+    mainEntry: './src/index.js',
+    plugins: []
 };
 
-var out;
 
-if (process.argv.indexOf('--prod') != -1 ) {
-    config.plugins.push(new UglifyJsPlugin({ minimize: true }));
+var out,
+    outfile = { dev: './dist', prod: './example' };
+
+if (argv.build === "prod")
+{
+    config.plugins.push(new UglifyJsPlugin({minimize: true}));
+    config.out = outfile.prod;
     out = config.name.toLowerCase() + '.umd.min.js';
-} else {
+}
+else if (argv.build === "dev")
+{
+    config.plugins.push( new BrowserSyncPlugin({
+        host: 'localhost',
+        port: 3000,
+        server: { baseDir: ['example'] }
+    }));
+    config.out = outfile.dev;
+    out = config.name.toLowerCase() + '.umd.js';
+}
+else
+{
+    config.out = outfile.prod;
     out = config.name.toLowerCase() + '.umd.js';
 }
 
@@ -29,7 +47,7 @@ module.exports = {
 
     output: {
 
-        path: path.resolve(config.dist),
+        path: path.resolve(config.out),
 
         filename: out,
 

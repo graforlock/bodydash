@@ -452,6 +452,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // Functor requirement: It maps (other Functor's map) over current Functor's __value.
 	};
 	
+	Maybe.prototype.chain = function (f)
+	{
+	    return this.map(f).join();
+	};
+	
 	function Just(v)
 	{
 	    Maybe.call(this, v);
@@ -591,7 +596,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Container.prototype.join = function()
 	{
 	    return this.__value;
-	}
+	};
 	
 	
 	module.exports = Container;
@@ -867,6 +872,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	//-->>> Lenses
 	var Identity = __webpack_require__(14),
+	    Left = __webpack_require__(12),
+	    Right = __webpack_require__(13),
+	    Maybe = __webpack_require__(6),
+	    debug =  __webpack_require__(10),
+	    Id = __webpack_require__(8).I,
 	    AOUnion = __webpack_require__(5).AOUnion,
 	    compose = __webpack_require__(16).compose,
 	    extend = __webpack_require__(4).extendTwo,
@@ -875,36 +885,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var Lens = curry(function Lens(key, f, x)
 	{
-	    return compose(extend(x), f(key), extend({}))(x);
+	    return compose(f(key), lensAdapter({}))(x);
 	});
 	
 	function lensAdapter(x)
 	{
 	    x = AOUnion(x);
-	    if({}.toString.call(x) === '[object Object]')
+	    switch ({}.toString.call(x))
 	    {
-	        return extend(x);
-	    }
-	    else {
-	        return x;
+	        case '[object Object]':
+	            return extend(x);
+	        case '[object Array]' :
+	            return x;
 	    }
 	}
 	
-	var _get = curry(function get(key, obj)
+	var _pass = curry(function (key, obj)
 	{
-	    var object = obj;
-	    object[key] = obj[key];
-	    return object;
+	    var Either = Maybe.of(obj[key]).map(Id).isNone() ? Left.of("No such key.") : Right.of(obj);
+	    return Either.map(function (o)
+	    {
+	        var next = {};
+	        next[key] = o[key];
+	        return next;
+	    }).__value;
 	});
 	
-	var get = function(lens, x) {
-	    return compose(Identity.of, lens(_get))(x);
+	var get = function (lens, x)
+	{
+	    return compose(Identity.of, lens(_pass))(x);
 	};
 	
-	var set = function(lens, f, x) {
+	var set = function (lens, f, x)
+	{
 	    return compose(Identity.of, lens(f))(x);
 	};
-	
 	
 	module.exports = {get: get, set: set, Lens: Lens};
 
