@@ -8,6 +8,7 @@ var test = require('tape'),
     debug = b.debug,
     core = b.core,
     Maybe = b.maybe,
+    Lens = b.lens,
     Left = b.left,
     Right = b.right,
     IO = b.io,
@@ -366,12 +367,43 @@ test('MAYBE', function (t)
 
 });
 
+
+test('LENS', function (t)
+{
+    t.plan(5);
+    /* @Setup */
+    var setup = {
+        o: {id: 10, name: "Michael", surname: "Jordan"},
+        arr: [1, 2, 3, 4]
+    };
+    var get = Lens.get,
+        set = Lens.set;
+
+    /* @Tests */
+    var LensT = Lens.Lens,
+        objGetT = get(LensT("name"), setup.o),
+        objSetT = set(LensT("name"), "Mikey", setup.o),
+        arrGetT = get(LensT(2), setup.arr),
+        arrSetT = set(LensT(3), 5, setup.arr);
+
+    t.equal(typeof LensT, 'function',
+        '| Lens(key) -> Lens is a function.');
+    t.equal(objGetT.join(), "Michael",
+        '| get(L, obj) -> Gets a value from the object.');
+    t.equal(objSetT.join().name, "Mikey",
+        '| set(L, key, obj) -> Sets a value on the object.');
+    t.equal(arrGetT.join(), 3,
+        '| get(L, arr) -> Gets a value from the array.');
+    t.equal(arrSetT.join()[3], 5,
+        '| set(L, n, arr) -> Sets a value on the array.');
+
+    t.end();
+
+
+});
+
+
 /* TODO:
-
- test('LENS', function(t)
- {
-
- });
 
  test('MATH', function(t)
  {

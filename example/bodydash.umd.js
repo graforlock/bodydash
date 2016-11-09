@@ -748,6 +748,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	IO.prototype.emap = function (f)
 	{
+	    /*  Adds additional mapping before yielding a value */
 	    return this.chain(function (e)
 	    {
 	        return new IO(compose(e, f));
@@ -888,6 +889,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Left = __webpack_require__(12),
 	    Right = __webpack_require__(13),
 	    Maybe = __webpack_require__(6),
+	    either = __webpack_require__(11),
 	    Id = __webpack_require__(8).I,
 	    AOUnion = __webpack_require__(5).AOUnion,
 	    SNUnion = __webpack_require__(5).SNUnion,
@@ -903,26 +905,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return compose(f(key), lensAdapter)(x);
 	});
 	
-	function lensAdapter(x)
+	var Adapter = curry(function Adapter(f, g, x)
 	{
 	    x = AOUnion(x);
+	    var Either = null;
 	    switch ({}.toString.call(x))
 	    {
 	        case '[object Object]':
-	            return extend({}, x);
+	            Either = Left.of(x);
+	            break;
 	        case '[object Array]' :
-	            return cloneArray(x);
+	            Either = Right.of(x);
+	            break;
 	    }
-	}
+	    return either(f, g, Either);
+	});
+	
+	var lensAdapter = Adapter(extend({}), cloneArray);
 	
 	var _getter = curry(function (key, obj)
 	{
 	    var Either = Maybe.of(obj[key]).map(Id).isNone() ? Left.of("No such key.") : Right.of(obj);
 	    return Either.map(function (o)
 	    {
-	        var next = {};
-	        next[key] = o[key];
-	        return next;
+	        return o[key];
 	    }).__value;
 	});
 	

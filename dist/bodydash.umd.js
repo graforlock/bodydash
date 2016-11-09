@@ -121,7 +121,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }),
 	
-	    slice: [].slice
+	    slice: [].slice,
+	
+	    cloneArray: function(arr)
+	    {
+	        return JSON.parse(JSON.stringify(arr));
+	    }
 	
 	};
 	
@@ -743,6 +748,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	IO.prototype.emap = function (f)
 	{
+	    /*  Adds additional mapping before yielding a value */
 	    return this.chain(function (e)
 	    {
 	        return new IO(compose(e, f));
@@ -883,11 +889,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Left = __webpack_require__(12),
 	    Right = __webpack_require__(13),
 	    Maybe = __webpack_require__(6),
+	    either = __webpack_require__(11),
 	    Id = __webpack_require__(8).I,
 	    AOUnion = __webpack_require__(5).AOUnion,
 	    SNUnion = __webpack_require__(5).SNUnion,
 	    compose = __webpack_require__(16).compose,
 	    extend = __webpack_require__(4).extendTwo,
+	    cloneArray = __webpack_require__(1).cloneArray,
 	    curry = __webpack_require__(2);
 	
 	
@@ -897,37 +905,48 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return compose(f(key), lensAdapter)(x);
 	});
 	
-	function lensAdapter(x)
+	var Adapter = curry(function Adapter(f, g, x)
 	{
 	    x = AOUnion(x);
+	    var Either = null;
 	    switch ({}.toString.call(x))
 	    {
 	        case '[object Object]':
-	            return extend({}, x);
+	            Either = Left.of(x);
+	            break;
 	        case '[object Array]' :
-	            return x;
+	            Either = Right.of(x);
+	            break;
 	    }
-	}
+	    return either(f, g, Either);
+	});
 	
-	var _pass = curry(function (key, obj)
+	var lensAdapter = Adapter(extend({}), cloneArray);
+	
+	var _getter = curry(function (key, obj)
 	{
 	    var Either = Maybe.of(obj[key]).map(Id).isNone() ? Left.of("No such key.") : Right.of(obj);
 	    return Either.map(function (o)
 	    {
-	        var next = {};
-	        next[key] = o[key];
-	        return next;
+	        return o[key];
 	    }).__value;
+	});
+	
+	var _setter = curry(function (val, key, obj)
+	{
+	    obj[key] = val;
+	    return obj;
+	
 	});
 	
 	var get = function (lens, x)
 	{
-	    return compose(Identity.of, lens(_pass))(x);
+	    return compose(Identity.of, lens(_getter))(x);
 	};
 	
-	var set = function (lens, f, x)
+	var set = function (lens, rep, x)
 	{
-	    return compose(Identity.of, lens(f))(x);
+	    return compose(Identity.of, lens(_setter(rep)))(x);
 	};
 	
 	module.exports = {get: get, set: set, Lens: Lens};

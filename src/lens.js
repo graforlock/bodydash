@@ -3,6 +3,7 @@ var Identity = require('./identity'),
     Left = require('./left'),
     Right = require('./right'),
     Maybe = require('./maybe'),
+    either = require('./either'),
     Id = require('./combinators').I,
     AOUnion = require('./contracts').AOUnion,
     SNUnion = require('./contracts').SNUnion,
@@ -18,26 +19,30 @@ var Lens = curry(function Lens(key, f, x)
     return compose(f(key), lensAdapter)(x);
 });
 
-function lensAdapter(x)
+var Adapter = curry(function Adapter(f, g, x)
 {
     x = AOUnion(x);
+    var Either = null;
     switch ({}.toString.call(x))
     {
         case '[object Object]':
-            return extend({}, x);
+            Either = Left.of(x);
+            break;
         case '[object Array]' :
-            return cloneArray(x);
+            Either = Right.of(x);
+            break;
     }
-}
+    return either(f, g, Either);
+});
+
+var lensAdapter = Adapter(extend({}), cloneArray);
 
 var _getter = curry(function (key, obj)
 {
     var Either = Maybe.of(obj[key]).map(Id).isNone() ? Left.of("No such key.") : Right.of(obj);
     return Either.map(function (o)
     {
-        var next = {};
-        next[key] = o[key];
-        return next;
+        return o[key];
     }).__value;
 });
 

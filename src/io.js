@@ -25,6 +25,7 @@ IO.prototype.map = function (f)
 
 IO.prototype.emap = function (f)
 {
+    /*  Adds additional mapping before yielding a value */
     return this.chain(function (e)
     {
         return new IO(compose(e, f));
